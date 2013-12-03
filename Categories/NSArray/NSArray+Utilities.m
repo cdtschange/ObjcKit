@@ -4,7 +4,7 @@
  BSD License, Use at your own risk
  */
 
-#import "NSArray-Utilities.h"
+#import "NSArray+Utilities.h"
 #import <time.h>
 #import <stdarg.h>
 

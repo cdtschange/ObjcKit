@@ -4,8 +4,7 @@
  BSD License, Use at your own risk
  */
 
-#import "NSArray-Utilities.h"
-#import "NSFileManager-Utilities.h"
+#import "NSFileManager+Utilities.h"
 
 NSString *NSDocumentsFolder(void) {
   return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];

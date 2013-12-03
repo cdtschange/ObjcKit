@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "NSArray-Utilities.h"
+#import "NSArray+Utilities.h"
 
 @interface NSArray_UtilitiesTests : XCTestCase
 
