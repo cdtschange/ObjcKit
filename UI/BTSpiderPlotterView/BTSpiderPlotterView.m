@@ -275,7 +275,8 @@
         double minusDelta =  [self.animationStepValueDictionary[key] floatValue];
         if ((delta>=0&&minusDelta<=0) || (delta<=0&&minusDelta>=0)) {
             if ([self checkIsToTarget]) {
-                self.displayLink.paused = YES;
+                [self.displayLink invalidate];
+                self.displayLink = nil;
                 _valueDictionary = self.targetValueDictionary;
                 [self calculateAllPoints];
                 [self setNeedsDisplay];
