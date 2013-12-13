@@ -436,7 +436,7 @@ static const NSUInteger kDomainSection = 1;
 	UITableViewCell *cell = [[[UITableViewCell alloc] initWithFrame:CGRectMake(0,0,0,0) reuseIdentifier:nil] autorelease];
 #endif
 
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
 	CGRect f = CGRectInset([cell bounds], 10, 10);
 	UITextField *textField = [[[UITextField alloc] initWithFrame:f] autorelease];
