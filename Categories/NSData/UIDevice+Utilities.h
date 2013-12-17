@@ -25,5 +25,6 @@ BOOL Screen_3_5_Inch();
 BOOL Screen_4_Inch();
 BOOL iPhone();
 BOOL iPad();
+BOOL iPod();
 
 @end

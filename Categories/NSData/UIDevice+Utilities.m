@@ -34,6 +34,9 @@ BOOL iPhone(){
 BOOL iPad(){
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
 }
+BOOL iPod(){
+    return [[[UIDevice currentDevice] model] isEqualToString:@"iPod touch"];
+}
 
 const void *UIDeviceVersionStringKey = "UIDeviceVersionStringKey";
 const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
