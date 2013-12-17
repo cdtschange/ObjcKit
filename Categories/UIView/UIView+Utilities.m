@@ -114,7 +114,6 @@
 
 - (UIImage *)screenshot
 {
-    
     // 创建一个bitmap的context
     // 并把它设置成为当前正在使用的context
     UIGraphicsBeginImageContext(self.bounds.size);
