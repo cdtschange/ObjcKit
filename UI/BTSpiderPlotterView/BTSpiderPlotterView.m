@@ -296,7 +296,7 @@
     for (NSString *key in keyArray) {
         double delta = [self.targetValueDictionary[key] floatValue] - [_valueDictionary[key] floatValue];
         double minusDelta =  [self.animationStepValueDictionary[key] floatValue];
-        if ((delta>=0&&minusDelta>=0) || (delta<=0&&minusDelta<=0)) {
+        if ((delta>0&&minusDelta>0) || (delta<0&&minusDelta<0)) {
             return NO;
         }
     }
