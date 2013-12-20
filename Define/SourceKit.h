@@ -9,5 +9,7 @@
 #ifndef SourceKitDemo_SourceKit_h
 #define SourceKitDemo_SourceKit_h
 
+#define VERYSMALL  (1.0E-150)
+#define EPSILON    (1.0E-8)
 
 #endif
