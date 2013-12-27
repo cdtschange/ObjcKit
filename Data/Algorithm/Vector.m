@@ -12,7 +12,7 @@ Vector VectorMake(CGFloat x,CGFloat y){
     return (Vector){x,y};
 }
 BOOL VectorEqual(Vector v1,Vector v2){
-    return (fabs(v1.x - v2.x) < EPSILON) && (fabs(v1.y - v2.y) < EPSILON);
+    return (fabs(v1.x - v2.x) < __FLT_EPSILON__) && (fabs(v1.y - v2.y) < __FLT_EPSILON__);
 }
 
 @implementation VectorUtils
