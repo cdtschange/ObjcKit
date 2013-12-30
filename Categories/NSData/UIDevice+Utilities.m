@@ -11,33 +11,6 @@
 #include <sys/sysctl.h>
 #include <mach/mach.h>
 
-
-BOOL iOS_5_OR_LATER(){
-    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=5.0;
-}
-BOOL iOS_6_OR_LATER(){
-    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=6.0;
-}
-BOOL iOS_7_OR_LATER(){
-    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=7.0;
-}
-
-BOOL Screen_3_5_Inch(){
-    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 960), [[UIScreen mainScreen] currentMode].size) : NO;
-}
-BOOL Screen_4_Inch(){
-    return [UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO;
-}
-BOOL iPhone(){
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-}
-BOOL iPad(){
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
-}
-BOOL iPod(){
-    return [[[UIDevice currentDevice] model] isEqualToString:@"iPod touch"];
-}
-
 const void *UIDeviceVersionStringKey = "UIDeviceVersionStringKey";
 const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
 
@@ -61,6 +34,15 @@ const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
         objc_setAssociatedObject(self, UIDeviceVersionStringKey, version, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return version;
+}
++ (BOOL)isSystemiOS5orGreater{
+    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=5.0;
+}
++ (BOOL)isSystemiOS6orGreater{
+    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=6.0;
+}
++ (BOOL)isSystemiOS7orGreater{
+    return [[[UIDevice currentDevice] systemVersionString] doubleValue]>=7.0;
 }
 
 - (NSString *) platform{
@@ -113,5 +95,37 @@ const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
     if ([deviceString isEqualToString:@"x86_64"])       return @"Simulator";
     return nil;
 }
++ (BOOL)isHardwareiPhone{
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+}
++ (BOOL)isHardwareiPad{
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+}
++ (BOOL)isHardwareiPod{
+    return [[[UIDevice currentDevice] model] isEqualToString:@"iPod touch"];
+}
+
+- (UIDeviceScreenSize)screenSize
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return UIDeviceScreenSizePad;
+    }
+    UIDeviceScreenSize screen = UIDeviceScreenSize35Inch;
+    if ([[UIScreen mainScreen] bounds].size.height == 568.f) {
+        screen = UIDeviceScreenSize4Inch;
+    }
+
+    return screen;
+}
++ (BOOL)isScreenSize35Inch{
+    return [UIDevice currentDevice].screenSize == UIDeviceScreenSize35Inch;
+}
++ (BOOL)isScreenSize4Inch{
+    return [UIDevice currentDevice].screenSize == UIDeviceScreenSize4Inch;
+}
++ (BOOL)isScreenSizePad{
+    return [UIDevice currentDevice].screenSize == UIDeviceScreenSizePad;
+}
+
 
 @end

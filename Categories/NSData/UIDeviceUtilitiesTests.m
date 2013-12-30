@@ -30,13 +30,15 @@
 - (void)testExample
 {
     //iOS7 4Inch iPhone
-    XCTAssertTrue(iOS_7_OR_LATER(), @"Device Utilities Fail");
-    XCTAssertTrue(iOS_6_OR_LATER(), @"Device Utilities Fail");
-    XCTAssertTrue(iOS_5_OR_LATER(), @"Device Utilities Fail");
-    XCTAssertFalse(Screen_3_5_Inch(), @"Device Utilities Fail");
-    XCTAssertTrue(Screen_4_Inch(), @"Device Utilities Fail");
-    XCTAssertTrue(iPhone(), @"Device Utilities Fail");
-    XCTAssertFalse(iPad(), @"Device Utilities Fail");
+    XCTAssertTrue([UIDevice isSystemiOS7orGreater], @"Device Utilities Fail");
+    XCTAssertTrue([UIDevice isSystemiOS6orGreater], @"Device Utilities Fail");
+    XCTAssertTrue([UIDevice isSystemiOS5orGreater], @"Device Utilities Fail");
+    XCTAssertFalse([UIDevice isScreenSize35Inch], @"Device Utilities Fail");
+    XCTAssertFalse([UIDevice isScreenSizePad], @"Device Utilities Fail");
+    XCTAssertTrue([UIDevice isScreenSize4Inch], @"Device Utilities Fail");
+    XCTAssertTrue([UIDevice isHardwareiPhone], @"Device Utilities Fail");
+    XCTAssertFalse([UIDevice isHardwareiPad], @"Device Utilities Fail");
+    XCTAssertFalse([UIDevice isHardwareiPod], @"Device Utilities Fail");
 }
 
 @end

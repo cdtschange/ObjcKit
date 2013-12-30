@@ -8,23 +8,31 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
+    UIDeviceScreenSize35Inch = 0,
+    UIDeviceScreenSize4Inch,
+    UIDeviceScreenSizePad
+};
+
 @interface UIDevice (Utilities)
 //可用的内存
 @property (readonly) double availableMemory;
 
 //系统软件版本 iOS5,6,7...
 - (NSString *) systemVersionString;
++ (BOOL)isSystemiOS5orGreater;
++ (BOOL)isSystemiOS6orGreater;
++ (BOOL)isSystemiOS7orGreater;
 //系统设备型号 iPhone,iPad,Simulator...
 - (NSString *) platform;
 - (NSString *) platformString;
-
-BOOL iOS_5_OR_LATER();
-BOOL iOS_6_OR_LATER();
-BOOL iOS_7_OR_LATER();
-BOOL Screen_3_5_Inch();
-BOOL Screen_4_Inch();
-BOOL iPhone();
-BOOL iPad();
-BOOL iPod();
++ (BOOL)isHardwareiPhone;
++ (BOOL)isHardwareiPad;
++ (BOOL)isHardwareiPod;
+//系统屏幕大小
+- (UIDeviceScreenSize)screenSize;
++ (BOOL)isScreenSize35Inch;
++ (BOOL)isScreenSize4Inch;
++ (BOOL)isScreenSizePad;
 
 @end
