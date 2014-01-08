@@ -35,4 +35,7 @@ typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
 + (BOOL)isScreenSize4Inch;
 + (BOOL)isScreenSizePad;
 
+//摄像头可以使用
++ (BOOL)isCameraDeviceAvailable;
+
 @end

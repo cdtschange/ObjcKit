@@ -128,4 +128,8 @@ const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
 }
 
 
++ (BOOL)isCameraDeviceAvailable{
+    return [UIImagePickerController isCameraDeviceAvailable: UIImagePickerControllerCameraDeviceFront];
+}
+
 @end
