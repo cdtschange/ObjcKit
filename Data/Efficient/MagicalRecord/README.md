@@ -15,3 +15,50 @@ MagicalRecord was inspired by the ease of Ruby on Rails' Active Record fetching.
 * Still allow the modification of the NSFetchRequest when request optimizations are needed
 
 
+初始化
+
+在AppDelegate中：
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+    [MagicalRecord setupCoreDataStackWithStoreNamed:@"Model.sqlite"];
+    // ...
+    return YES;
+}
+
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
+    [MagicalRecord cleanUp];
+}
+这样就搞定初始化啦！！
+
+增
+
+Person *person = [Person MR_createEntity];
+person.firstname = @"Frank";
+person.lastname = @"Zhang";
+person.age = @26;
+[[NSManagedObjectContext MR_defaultContext] MR_save];
+查
+
+//查找数据库中的所有Person。
+NSArray *persons = [Person MR_findAll];
+
+//查找所有的Person并按照first name排序。
+NSArray *personsSorted = [Person MR_findAllSortedBy:@"firstname" ascending:YES];
+
+//查找所有age属性为25的Person记录。
+NSArray *personsAgeEuqals25   = [Person MR_findByAttribute:@"age" withValue:[NSNumber numberWithInt:25]];
+
+//查找数据库中的第一条记录
+Person *person = [Person MR_findFirst];
+改
+
+Person *person = ...;//此处略
+person.lastname = object;        
+[[NSManagedObjectContext MR_defaultContext] MR_save];
+删
+
+Person *person = ...;//此处略
+[person MR_deleteEntity];
+[[NSManagedObjectContext MR_defaultContext] MR_save];
