@@ -26,7 +26,23 @@
 
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
+#import <objc/runtime.h>
 #import "STDbObject.h"
+
+#ifdef DEBUG
+#ifdef STDBBUG
+#define STDBLog(fmt, ...) NSLog((@"%s [Line %d]\n" fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
+#define STDBLog(...)
+#endif
+#else
+#define STDBLog(...)
+#endif
+
+#define DBText  @"text"
+#define DBInt   @"integer"
+#define DBFloat @"real"
+#define DBData  @"blob"
 
 @class STDbObject;
 
@@ -133,5 +149,14 @@
  * 查看所有表名
  */
 + (NSArray *)sqlite_tablename;
++ (BOOL)cleanExpireDbObject:(Class)aClass;
++ (id)valueForObjc_property_t:(objc_property_t)property dbValue:(id)dbValue;
++ (BOOL)isOpened;
++ (NSArray *)sqlite_columns:(Class)cls;
++ (BOOL)sqlite_tableExist:(Class)aClass;
++ (NSString *)dbTypeConvertFromObjc_property_t:(objc_property_t)property;
+
+@property (nonatomic) sqlite3 *sqlite3DB;
+@property (nonatomic, assign) BOOL isOpened;
 
 @end

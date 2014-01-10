@@ -14,7 +14,7 @@ enum SexType {
     kSexTypeFemale = 1,
 };
 
-@interface User : STDbObject
+@interface User1 : STDbObject
 
 @property (assign, nonatomic) int _id;        /** 唯一标识id */
 @property (strong, nonatomic) NSString *name; /** 姓名 */
@@ -31,7 +31,7 @@ enum SexType {
 
 @end
 
-@implementation User
+@implementation User1
 
 @end
 
@@ -57,11 +57,11 @@ enum SexType {
 
 - (void)testSTDbObject
 {
-    NSArray *users = [User allDbObjects];
+    NSArray *users = [User1 allDbObjects];
     // 添加默认用户
-    if (![User existDbObjectsWhere:@"_id=0"]) {
+    if (![User1 existDbObjectsWhere:@"_id=0"]) {
         // 初始化
-        User *user = [[User alloc] init];
+        User1 *user = [[User1 alloc] init];
         user._id = 0;
         user.name = @"admin";
         user.age = 26;
@@ -78,13 +78,13 @@ enum SexType {
         // 插入到数据库
         [user insertToDb];
     }
-    users = [User allDbObjects];
+    users = [User1 allDbObjects];
     // 更新到数据库
     if (users.count>0) {
-        User *user1 = users[0];
+        User1 *user1 = users[0];
         user1.name = @"admin2";
         user1.age = 27;
-        [user1 updatetoDb];
+        [user1 updateToDb];
         // 从数据库中删除数据
         [user1 removeFromDb];
     }

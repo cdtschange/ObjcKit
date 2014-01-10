@@ -25,19 +25,9 @@
 // THE SOFTWARE.
 
 #import "STDbHandle.h"
-#import <objc/runtime.h>
 
 #define DBName @"stdb.sqlite"
 
-#ifdef DEBUG
-#ifdef STDBBUG
-#define STDBLog(fmt, ...) NSLog((@"%s [Line %d]\n" fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
-#else
-#define STDBLog(...)
-#endif
-#else
-#define STDBLog(...)
-#endif
 
 enum {
     DBObjAttrInt,
@@ -48,11 +38,6 @@ enum {
     DBObjAttrArray,
     DBObjAttrDictionary,
 };
-
-#define DBText  @"text"
-#define DBInt   @"integer"
-#define DBFloat @"real"
-#define DBData  @"blob"
 
 @interface NSDate (STDbDate)
 
@@ -121,9 +106,6 @@ enum {
 @end
 
 @interface STDbHandle()
-
-@property (nonatomic) sqlite3 *sqlite3DB;
-@property (nonatomic, assign) BOOL isOpened;
 
 @end
 
@@ -278,23 +260,17 @@ enum {
     } else {
         flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
     }
-    
     if ([STDbHandle isOpened]) {
-//        STDBLog(@"数据库已打开");
         return YES;
     }
-
     int rc = sqlite3_open_v2([dbPath UTF8String], &db->_sqlite3DB, flags, NULL);
     if (rc == SQLITE_OK) {
-//        STDBLog(@"打开数据库%@成功!", dbPath);
-        
         db.isOpened = YES;
         return YES;
     } else {
         STDBLog(@"打开数据库%@失败!", dbPath);
         return NO;
     }
-
     return NO;
 }
 

@@ -62,7 +62,7 @@
  *
  *	@return	更新成功YES,否则NO
  */
-- (BOOL)updatetoDb;
+- (BOOL)updateToDb;
 
 /**
  *	@brief	从数据库删除对象

@@ -23,10 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
- objective-c的数据库封装方法，实体类直接映射到数据库，对数据库的操作极其简单实用，对数据库的CRUD操作无需写任何SQL语句。 
- http://code4app.com/ios/52b6eac3cb7e84c0158b8157
- */
 
 #ifndef STDbObject_STDbKit_h
 #define STDbObject_STDbKit_h

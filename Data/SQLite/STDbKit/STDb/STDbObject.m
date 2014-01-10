@@ -64,7 +64,7 @@
  *
  *	@return	更新成功YES,否则NO
  */
-- (BOOL)updatetoDb
+- (BOOL)updateToDb
 {
     NSString *condition = [NSString stringWithFormat:@"%@=%d", kDbId, self.id__];
     return [STDbHandle updateDbObject:self condition:condition];
