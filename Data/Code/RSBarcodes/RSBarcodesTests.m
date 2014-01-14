@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "RSCodeView.h"
-#import "RSUnifiedCodeGenerator.h"
+#import "RSCodeGen.h"
 #import "RSScannerViewController.h"
 
 @interface RSBarcodesTests : XCTestCase
@@ -33,7 +33,7 @@
 - (void)testRSBarcodesGenerator
 {
     RSCodeView *view = [[RSCodeView alloc] init];
-    view.code = [[RSUnifiedCodeGenerator codeGen] genCodeWithContents:@"HelloWorld2014010906" machineReadableCodeObjectType:AVMetadataObjectTypeQRCode];
+    view.code = [CodeGen genCodeWithContents:@"HelloWorld2014010906" machineReadableCodeObjectType:AVMetadataObjectTypeQRCode];
 }
 
 - (void)testRSBarcodesScanner{
