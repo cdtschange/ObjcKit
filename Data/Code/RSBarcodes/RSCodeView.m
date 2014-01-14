@@ -59,7 +59,6 @@
     if (!_code) {
         return;
     }
-    self.frame = CGRectMake(10, 218, 300, 300);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextSaveGState(context);
