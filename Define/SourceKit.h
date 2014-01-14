@@ -11,5 +11,7 @@
 
 #define VERYSMALL  (1.0E-150)
 #define EPSILON    (1.0E-8)
+#define MB (1024*1024)
+#define GB (MB*1024)
 
 #endif

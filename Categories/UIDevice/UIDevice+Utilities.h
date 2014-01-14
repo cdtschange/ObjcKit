@@ -38,4 +38,27 @@ typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
 //摄像头可以使用
 + (BOOL)isCameraDeviceAvailable;
 
+//硬盘剩余容量
++ (long long)freeDiskSpace;
++ (NSString *)freeDiskSpaceString;
+//硬盘总容量
++ (long long)totalDiskSpace;
++ (NSString *)totalDiskSpaceString;
+
+//内存剩余容量
++ (unsigned long long)freeMemorySpace;
++ (NSString *)freeMemorySpaceString;
++ (double)freeMemorySpacePercent;
+//内存总容量
++ (unsigned long long)totalMemorySpace;
++ (NSString *)totalMemorySpaceString;
+
+
+//电池状态
++ (UIDeviceBatteryState)batteryStatus;
+//电池电量
++ (double)batteryLevel;
+
+//运营商
++ (NSString *)carrierName;
 @end

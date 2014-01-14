@@ -27,7 +27,7 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testUIDeviceUtilities
 {
     //iOS7 4Inch iPhone
     XCTAssertTrue([UIDevice isSystemiOS7orGreater], @"Device Utilities Fail");
