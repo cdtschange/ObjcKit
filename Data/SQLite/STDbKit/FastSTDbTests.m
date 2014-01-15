@@ -75,6 +75,9 @@
     User *user = [[User alloc] init];
     user.age = 22;
     user.name = @"user1";
+    user.birthday = [NSDate date];
+    user.info = @{@"name": @"xuezhang"};
+    user.favs = @[@"桌球、羽毛球"];
     user.card = [[Card alloc] init];
     user.card.cardLevel = 6;
     user.card.cardNum = [NSNumber numberWithInteger:3];
@@ -86,6 +89,8 @@
     XCTAssertEqual(1, (int)array.count);
     User *userdb = array[0];
     XCTAssertEqual(user.age, userdb.age);
+    XCTAssertEqual(user.info.count, userdb.info.count);
+    XCTAssertEqual(user.favs.count, userdb.favs.count);
     XCTAssertTrue([userdb.name isEqualToString:user.name]);
     XCTAssertEqual(user.card.cardLevel, userdb.card.cardLevel);
     XCTAssertEqual(user.card.cardNum.intValue, userdb.card.cardNum.intValue);
@@ -96,13 +101,16 @@
     XCTAssertEqual(1, (int)array.count);
     userdb = array[0];
     userdb.card.cardLevel = 2;
+    userdb.favs = @[@"桌球",@"羽毛球",@"乒乓球"];
     userdb.card.cardNum = [NSNumber numberWithInt:90];
     userdb.card.money.name = @"name2";
     [userdb updateToDb];
 
+    array = [User allDbObjects];
     array = [User dbObjectsWhere:condition orderby:nil];
     XCTAssertEqual(1, (int)array.count);
     userdb = array[0];
+    XCTAssertEqual(3, (int)userdb.favs.count);
     XCTAssertEqual(2, (int)userdb.card.cardLevel);
     XCTAssertEqual(90, (int)userdb.card.cardNum.intValue);
     XCTAssertTrue([userdb.card.money.name isEqualToString:@"name2"]);

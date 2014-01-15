@@ -138,9 +138,13 @@ const void *UIDevicePlatformStringKey = "UIDevicePlatformStringKey";
     return [UIDevice currentDevice].screenSize == UIDeviceScreenSizePad;
 }
 
-
+//摄像头可以使用
 + (BOOL)isCameraDeviceAvailable{
-    return [UIImagePickerController isCameraDeviceAvailable: UIImagePickerControllerCameraDeviceRear];
+    return [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+}
+//相册可以使用
++ (BOOL)isPhotoLibraryAvailable{
+    return [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 

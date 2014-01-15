@@ -26,8 +26,10 @@
 
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
-#import <objc/runtime.h>
 #import "STDbObject.h"
+#import <objc/runtime.h>
+
+#define DBName @"stdb.sqlite"
 
 #ifdef DEBUG
 #ifdef STDBBUG
@@ -38,6 +40,16 @@
 #else
 #define STDBLog(...)
 #endif
+
+enum {
+    DBObjAttrInt,
+    DBObjAttrFloat,
+    DBObjAttrString,
+    DBObjAttrData,
+    DBObjAttrDate,
+    DBObjAttrArray,
+    DBObjAttrDictionary,
+};
 
 #define DBText  @"text"
 #define DBInt   @"integer"
@@ -149,8 +161,10 @@
  * 查看所有表名
  */
 + (NSArray *)sqlite_tablename;
+
 + (BOOL)cleanExpireDbObject:(Class)aClass;
 + (id)valueForObjc_property_t:(objc_property_t)property dbValue:(id)dbValue;
++ (id)valueForDbObjc_property_t:(objc_property_t)property dbValue:(id)dbValue;
 + (BOOL)isOpened;
 + (NSArray *)sqlite_columns:(Class)cls;
 + (BOOL)sqlite_tableExist:(Class)aClass;

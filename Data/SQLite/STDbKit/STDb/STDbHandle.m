@@ -25,19 +25,7 @@
 // THE SOFTWARE.
 
 #import "STDbHandle.h"
-
-#define DBName @"stdb.sqlite"
-
-
-enum {
-    DBObjAttrInt,
-    DBObjAttrFloat,
-    DBObjAttrString,
-    DBObjAttrData,
-    DBObjAttrDate,
-    DBObjAttrArray,
-    DBObjAttrDictionary,
-};
+#import <objc/runtime.h>
 
 @interface NSDate (STDbDate)
 

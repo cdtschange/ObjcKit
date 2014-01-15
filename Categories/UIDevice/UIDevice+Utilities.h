@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
 
 //摄像头可以使用
 + (BOOL)isCameraDeviceAvailable;
+//相册可以使用
++ (BOOL)isPhotoLibraryAvailable;
 
 //硬盘剩余容量
 + (long long)freeDiskSpace;

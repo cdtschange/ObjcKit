@@ -17,6 +17,13 @@
 
 @implementation FastSTDbHandle
 
++ (NSString *)dbPath
+{
+    NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", document, DBName];
+    return path;
+}
+
 + (BOOL)dropTableFromDB:(Class)aClass
 {
     if (![FastSTDbHandle isOpened]) {
@@ -34,11 +41,11 @@
         if(ret != SQLITE_OK){
             fprintf(stderr,"drop table fail: %s\n",errmsg);
             sqlite3_free(errmsg);
-            [STDbHandle closeDb];
+            [FastSTDbHandle closeDb];
             return NO;
         } else {
             sqlite3_free(errmsg);
-            [STDbHandle closeDb];
+            [FastSTDbHandle closeDb];
             return YES;
         }
     }
@@ -115,6 +122,22 @@
                 continue;
             }
             NSString *column_type_string = propertyArr[i - 1][@"type"];
+            
+            NSArray *names = [key componentsSeparatedByString:STDb_DBColumnConnectionSymbol];
+            objc_property_t property_t = class_getProperty(obj.class, [key UTF8String]);
+            if (names.count > 1) {
+                NSString *valueKey = @"";
+                for (int k = 0; k <= names.count - 2; k++) {
+                    NSString *propertyName = names[k];
+                    if (valueKey.length > 1) {
+                        valueKey = [valueKey stringByAppendingString:@"."];
+                    }
+                    valueKey = [valueKey stringByAppendingString:propertyName];
+                }
+                NSObject *property = [obj valueForKeyPath:valueKey];
+                NSString *lastPropertyName = names.lastObject;
+                property_t = class_getProperty(property.class, [lastPropertyName UTF8String]);
+            }
 
             NSString *changeKey = [key stringByReplacingOccurrencesOfString:STDb_DBColumnConnectionSymbol withString:@"."];
             id value = [obj valueForKeyPath:changeKey];
@@ -133,6 +156,7 @@
                 if (!value || value == [NSNull null] || [value isEqual:@""]) {
                     sqlite3_bind_null(stmt, i);
                 } else {
+                    value = [self valueForDbObjc_property_t:property_t dbValue:value];
                     NSString *column_value = [NSString stringWithFormat:@"%@", value];
                     sqlite3_bind_text(stmt, i, [column_value UTF8String], -1, SQLITE_STATIC);
                 }
@@ -303,7 +327,8 @@
                     const unsigned char *value = sqlite3_column_text(stmt, i);
                     if (value != NULL) {
                         column_value = [NSString stringWithUTF8String: (const char *)value];
-                        [obj setValue:column_value forKeyPath:columnNameStr];
+                        id objValue = [self valueForObjc_property_t:property_t dbValue:column_value];
+                        [obj setValue:objValue forKeyPath:columnNameStr];
                     }
                 } else if ([obj_column_decltype isEqualToString:@"integer"]) {
                     int value = sqlite3_column_int(stmt, i);
@@ -356,8 +381,8 @@
     if (![FastSTDbHandle isOpened]) {
         [FastSTDbHandle openDb];
     }
-    NSMutableArray *propertyTypeArr = [NSMutableArray arrayWithArray:[self sqlite_columns:obj.class]];
-    NSInteger argNum = propertyTypeArr.count;
+    NSMutableArray *propertyArr = [NSMutableArray arrayWithArray:[self sqlite_columns:obj.class]];
+    NSInteger argNum = propertyArr.count;
 
     sqlite3_stmt *stmt = NULL;
     NSString *tableName = NSStringFromClass(obj.class);
@@ -366,7 +391,7 @@
     sqlite3 *sqlite3DB = [[FastSTDbHandle shareDb] sqlite3DB];
 
     for (int i = 1; i <= argNum; i++) {
-        NSString * columnNameStr = propertyTypeArr[i - 1][@"title"];
+        NSString * columnNameStr = propertyArr[i - 1][@"title"];
         if ([columnNameStr isEqualToString:kDbId]) {
             continue;
         }
@@ -375,7 +400,7 @@
         if (value && (NSNull *)value != [NSNull null]) {
             NSString *bindStr = [NSString stringWithFormat:@"%@=?", columnNameStr];
             [bindStrArr addObject:bindStr];
-            [updatePropertyTypeArr addObject:propertyTypeArr[i - 1]];
+            [updatePropertyTypeArr addObject:propertyArr[i - 1]];
         }
     }
 
@@ -386,10 +411,29 @@
     int result = sqlite3_prepare_v2(sqlite3DB, [updateStr UTF8String], -1, &stmt, &errmsg);
     if (result == SQLITE_OK) {
         for (int i = 1; i < updatePropertyTypeArr.count+1; i++) {
+
             NSString * key = updatePropertyTypeArr[i-1][@"title"];
             NSString *column_type_string = updatePropertyTypeArr[i-1][@"type"];
+
             NSString *changeKey = [key stringByReplacingOccurrencesOfString:STDb_DBColumnConnectionSymbol withString:@"."];
             id value = [obj valueForKeyPath:changeKey];
+
+            // 拿到正确的property
+            NSArray *names = [key componentsSeparatedByString:STDb_DBColumnConnectionSymbol];
+            objc_property_t property_t = class_getProperty(obj.class, [key UTF8String]);
+            if (names.count > 1) {
+                NSString *valueKey = @"";
+                for (int k = 0; k <= names.count - 2; k++) {
+                    NSString *propertyName = names[k];
+                    if (valueKey.length > 1) {
+                        valueKey = [valueKey stringByAppendingString:@"."];
+                    }
+                    valueKey = [valueKey stringByAppendingString:propertyName];
+                }
+                NSObject *property = [obj valueForKeyPath:valueKey];
+                NSString *lastPropertyName = names.lastObject;
+                property_t = class_getProperty(property.class, [lastPropertyName UTF8String]);
+            }
 
             if ([column_type_string isEqualToString:@"blob"]) {
                 if (!value || value == [NSNull null] || [value isEqual:@""]) {
@@ -404,6 +448,7 @@
                 if (!value || value == [NSNull null] || [value isEqual:@""]) {
                     sqlite3_bind_null(stmt, i);
                 } else {
+                    value = [self valueForDbObjc_property_t:property_t dbValue:value];
                     NSString *column_value = [NSString stringWithFormat:@"%@", value];
                     sqlite3_bind_text(stmt, i, [column_value UTF8String], -1, SQLITE_STATIC);
                 }
