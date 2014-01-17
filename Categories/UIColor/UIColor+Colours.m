@@ -17,9 +17,9 @@
     unsigned rgbValue = 0;
     hexString = [hexString stringByReplacingOccurrencesOfString:@"#" withString:@""];
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
-	
+
     [scanner scanHexInt:&rgbValue];
-	
+
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
@@ -34,7 +34,7 @@
     NSString *red = [NSString stringWithFormat:@"%02x", r];
     NSString *green = [NSString stringWithFormat:@"%02x", g];
     NSString *blue = [NSString stringWithFormat:@"%02x", b];
-	
+
     return [NSString stringWithFormat:@"#%@%@%@", red, green, blue];
 }
 
@@ -54,7 +54,7 @@
     if (rgbaDict[@"r"] && rgbaDict[@"g"] && rgbaDict[@"b"] && rgbaDict[@"a"]) {
         return [UIColor colorWithRed:[rgbaDict[@"r"] floatValue] green:[rgbaDict[@"g"] floatValue] blue:[rgbaDict[@"b"] floatValue] alpha:[rgbaDict[@"a"] floatValue]];
     }
-    
+
     return [UIColor clearColor];
 }
 
@@ -64,7 +64,7 @@
 {
     // Takes a UIColor and returns R,G,B,A values in NSNumber form
     CGFloat r=0,g=0,b=0,a=0;
-    
+
     if ([self respondsToSelector:@selector(getRed:green:blue:alpha:)]) {
         [self getRed:&r green:&g blue:&b alpha:&a];
     }
@@ -77,7 +77,7 @@
     }
     return @[@(r),
              @(g),
-             @(b), 
+             @(b),
              @(a)];
 }
 
@@ -95,7 +95,7 @@
         b = components[2];
         a = components[3];
     }
-    
+
     return @{@"r":@(r), @"g":@(g), @"b":@(b), @"a":@(a)};
 }
 
@@ -105,14 +105,14 @@
 {
     // Takes a UIColor and returns Hue,Saturation,Brightness,Alpha values in NSNumber form
     CGFloat h=0,s=0,b=0,a=0;
-    
+
     if ([self respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
         [self getHue:&h saturation:&s brightness:&b alpha:&a];
     }
-    
+
     return @[@(h),
              @(s),
-             @(b), 
+             @(b),
              @(a)];
 }
 
@@ -120,11 +120,11 @@
 {
     // Takes a UIColor and returns Hue,Saturation,Brightness,Alpha values in NSNumber form
     CGFloat h=0,s=0,b=0,a=0;
-    
+
     if ([self respondsToSelector:@selector(getHue:saturation:brightness:alpha:)]) {
         [self getHue:&h saturation:&s brightness:&b alpha:&a];
     }
-    
+
     return @{@"h":@(h), @"s":@(s), @"b":@(b), @"a":@(a)};
 }
 
@@ -135,7 +135,7 @@
     if (hsbaArray.count < 4) {
         return [UIColor clearColor];
     }
-    
+
     return [UIColor colorWithHue:[hsbaArray[0] doubleValue] saturation:[hsbaArray[1] doubleValue] brightness:[hsbaArray[2] doubleValue] alpha:[hsbaArray[3] doubleValue]];
 }
 
@@ -144,7 +144,7 @@
     if (hsbaDict[@"h"] && hsbaDict[@"s"] && hsbaDict[@"b"] && hsbaDict[@"a"]) {
         return [UIColor colorWithHue:[hsbaDict[@"h"] doubleValue] saturation:[hsbaDict[@"s"] doubleValue] brightness:[hsbaDict[@"b"] doubleValue] alpha:[hsbaDict[@"a"] doubleValue]];
     }
-    
+
     return [UIColor clearColor];
 }
 
@@ -157,7 +157,7 @@
     float sat = [hsbArray[1] floatValue] * 100;
     float bright = [hsbArray[2] floatValue] * 100;
     float alpha = [hsbArray[3] floatValue];
-    
+
     switch (type) {
         case ColorSchemeAnalagous:
             return [UIColor analagousColorsFromHue:hue saturation:sat brightness:bright alpha:alpha];
@@ -180,7 +180,7 @@
     UIColor *colorAbove2 = [UIColor colorWithHue:[UIColor addDegrees:30 toDegree:h]/360 saturation:(s-5)/100 brightness:(b-10)/100 alpha:a];
     UIColor *colorBelow1 = [UIColor colorWithHue:[UIColor addDegrees:-15 toDegree:h]/360 saturation:(s-5)/100 brightness:(b-5)/100 alpha:a];
     UIColor *colorBelow2 = [UIColor colorWithHue:[UIColor addDegrees:-30 toDegree:h]/360 saturation:(s-5)/100 brightness:(b-10)/100 alpha:a];
-    
+
     return @[colorAbove2,colorAbove1,colorBelow1,colorBelow2];
 }
 
@@ -190,7 +190,7 @@
     UIColor *colorAbove2 = [UIColor colorWithHue:h/360 saturation:(s/2)/100 brightness:(b/3)/100 alpha:a];
     UIColor *colorBelow1 = [UIColor colorWithHue:h/360 saturation:(s/3)/100 brightness:(2*b/3)/100 alpha:a];
     UIColor *colorBelow2 = [UIColor colorWithHue:h/360 saturation:s/100 brightness:(4*b/5)/100 alpha:a];
-    
+
     return @[colorAbove2,colorAbove1,colorBelow1,colorBelow2];
 }
 
@@ -200,7 +200,7 @@
     UIColor *colorAbove2 = [UIColor colorWithHue:[UIColor addDegrees:120 toDegree:h]/360 saturation:(7*s/6)/100 brightness:(b-5)/100 alpha:a];
     UIColor *colorBelow1 = [UIColor colorWithHue:[UIColor addDegrees:240 toDegree:h]/360 saturation:s/100 brightness:b/100 alpha:a];
     UIColor *colorBelow2 = [UIColor colorWithHue:[UIColor addDegrees:240 toDegree:h]/360 saturation:(7*s/6)/100 brightness:(b-5)/100 alpha:a];
-    
+
     return @[colorAbove2,colorAbove1,colorBelow1,colorBelow2];
 }
 
@@ -210,7 +210,7 @@
     UIColor *colorAbove2 = [UIColor colorWithHue:h/360 saturation:s/100 brightness:(4*b/5)/100 alpha:a];
     UIColor *colorBelow1 = [UIColor colorWithHue:[UIColor addDegrees:180 toDegree:h]/360 saturation:s/100 brightness:b/100 alpha:a];
     UIColor *colorBelow2 = [UIColor colorWithHue:[UIColor addDegrees:180 toDegree:h]/360 saturation:(5*s/7)/100 brightness:b/100 alpha:a];
-    
+
     return @[colorAbove2,colorAbove1,colorBelow1,colorBelow2];
 }
 
@@ -236,6 +236,17 @@
     NSArray *rgbaArray = [self rgbaArray];
     double a = 1 - ((0.299 * [rgbaArray[0] doubleValue]) + (0.587 * [rgbaArray[1] doubleValue]) + (0.114 * [rgbaArray[2] doubleValue]));
     return a < 0.5 ? [UIColor blackColor] : [UIColor whiteColor];
+}
+
+
+#pragma mark - Complementary Color
+- (UIColor *)complementaryColor
+{
+    NSMutableDictionary *hsba = [[self hsbaDictionary] mutableCopy];
+    float newH = [UIColor addDegrees:180.0f toDegree:([hsba[@"h"] floatValue]*360)];
+    [hsba setObject:@(newH) forKey:@"h"];
+    return [UIColor colorFromHSBADictionary:hsba];
+
 }
 
 

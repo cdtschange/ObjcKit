@@ -18,7 +18,7 @@ typedef enum
     ColorSchemeMonochromatic,
     ColorSchemeTriad,
     ColorSchemeComplementary
-	
+
 } ColorScheme;
 
 @interface UIColor (Colours)
@@ -109,6 +109,14 @@ typedef enum
  @return    UIColor
  */
 - (UIColor *)blackOrWhiteContrastingColor;
+
+
+#pragma mark - Complementary Color
+/**
+ Creates a complementary color - a color directly opposite it on the color wheel.
+ @return    UIColor
+ */
+- (UIColor *)complementaryColor;
 
 
 #pragma mark - Colors
