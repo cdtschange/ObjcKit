@@ -60,6 +60,8 @@ typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
 + (UIDeviceBatteryState)batteryStatus;
 //电池电量
 + (double)batteryLevel;
+//MAC地址
++ (NSString *)macAddress;
 
 //运营商
 + (NSString *)carrierName;

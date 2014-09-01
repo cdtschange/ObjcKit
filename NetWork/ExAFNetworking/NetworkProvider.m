@@ -7,6 +7,7 @@
 //
 
 #import "NetworkProvider.h"
+#define REACHABILITY_URL @"http://www.baidu.com"
 
 @interface NetworkProvider()
 
@@ -21,7 +22,7 @@
     if (self = [super init]) {
         self.requestArray = [NSMutableArray new];
         self.request = [[ExAFHttpRequest alloc] init];
-        self.request.baseURL = self.baseURL;
+        self.request.baseURL = REACHABILITY_URL;
         __weak NetworkProvider *weakself = self;
         [self.request.client setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             weakself.reachabilityStatus = status;
@@ -34,6 +35,7 @@
 }
 -(void)setRequest:(ExAFHttpRequest *)request{
     [self.requestArray addObject:request];
+    _request = request;
 }
 
 -(void)requestWithPath:(NSString *)path params:(NSDictionary *)params method:(ExAFNetworkHttpMethod)method success:(void (^)(id))success failure:(void (^)(NSError *))failure{
@@ -55,13 +57,23 @@
     for (NSString *key in params) {
         [dict setObject:params[key] forKey:key];
     }
+    if (self.statusBlock) {
+        self.statusBlock(NetworkProviderStatusBegin,nil);
+    }
+    __weak NetworkProvider *weakself = self;
     [request requestWithMethod:method path:path param:dict success:^(NSHTTPURLResponse *response, id responseObject) {
         if (success) {
             success(responseObject);
         }
+        if (weakself.statusBlock) {
+            weakself.statusBlock(NetworkProviderStatusEnd,nil);
+        }
     } failure:^(NSHTTPURLResponse *response, NSError *error) {
         if (failure) {
             failure(error);
+        }
+        if (weakself.statusBlock) {
+            weakself.statusBlock(NetworkProviderStatusFailed,error);
         }
     }];
 }
