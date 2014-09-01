@@ -8,8 +8,31 @@
 
 #import "AppInfo.h"
 
+@interface AppInfo()
+
+@property (nonatomic, copy) NSString *imeiPrivate;
+
+@end
+
 @implementation AppInfo
 
+AppInfo * _sharedAppInfo = nil;
+
++(AppInfo *)shared
+{
+    @synchronized(self) {
+        if(_sharedAppInfo == nil) {
+            _sharedAppInfo = [[self alloc] init];
+        }
+    }
+    return _sharedAppInfo;
+}
+
+//app bundle identifier
++(NSString *)appBundleIdentifier{
+    NSDictionary *appInfoDict = [[NSBundle mainBundle] infoDictionary];
+    return appInfoDict[(NSString *)kCFBundleIdentifierKey];
+}
 //App最低目标版本 etc.6.0 7.0
 + (NSString *)minTargetedVersion{
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleInfoDictionaryVersion"];
@@ -37,5 +60,13 @@
 //App Bundle Short Version String
 + (NSString *)bundleShortVersionString{
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+}
+
+- (NSString *)IMEI
+{
+    if (self.imeiPrivate.length == 0) {
+        self.imeiPrivate = [OpenUDID value];
+    }
+    return self.imeiPrivate;
 }
 @end

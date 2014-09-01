@@ -7,8 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "OpenUDID.h"
 
 @interface AppInfo : NSObject
+
++ (AppInfo *)shared;
+//app bundle identifier
++(NSString *)appBundleIdentifier;
 //App最低目标版本
 + (NSString *)minTargetedVersion;
 //App iOS SDK版本
@@ -17,4 +22,6 @@
 + (NSString *)bundleVersion;
 //App Bundle Short Version String
 + (NSString *)bundleShortVersionString;
+//OpenUDID
+- (NSString *)IMEI;
 @end
