@@ -10,5 +10,6 @@
 #define ObjcKit_NSString_Kit_h
 
 #import "NSString+Valid.h"
+#import "NSString+Encrypt.h"
 
 #endif

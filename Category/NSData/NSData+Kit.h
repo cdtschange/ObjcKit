@@ -10,5 +10,6 @@
 #define ObjcKit_NSData_Kit_h
 
 #import "NSData+CommonCrypto.h"
+#import "NSData+Base64Additions.h"
 
 #endif
