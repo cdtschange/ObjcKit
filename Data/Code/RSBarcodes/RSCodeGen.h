@@ -12,4 +12,7 @@
 
 #import "RSExtendedCode39Generator.h"
 
+#import "RSCodeView.h"
+#import "RSScannerViewController.h"
+
 #define CodeGen [RSUnifiedCodeGenerator codeGen]
