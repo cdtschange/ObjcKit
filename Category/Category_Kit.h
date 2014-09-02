@@ -18,6 +18,8 @@
 #import "UIDevice+Kit.h"
 #import "UIImage+Kit.h"
 #import "UIImageView+Kit.h"
+#import "UINavigationItem+Kit.h"
 #import "UITextField+Kit.h"
 #import "UIView+Kit.h"
+#import "UIViewController+Kit.h"
 #endif

@@ -10,6 +10,7 @@
 #define ObjcKit_UI_Kit_h
 
 #import "ActivityHUD.h"
+#import "BaseKitViewController.h"
 #import "BTSpiderPlotterView.h"
 #import "CameraController.h"
 #import "CSAnimationView.h"
@@ -17,6 +18,7 @@
 #import "MHTextField.h"
 #import "PulsingHalo.h"
 #import "RadarViewPortView.h"
+#import "THWebController.h"
 #import "WaterRefreshLoadMoreView.h"
 #import "ZYQSphereView.h"
 
