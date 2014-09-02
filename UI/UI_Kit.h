@@ -22,6 +22,7 @@
 #import "PulsingHalo.h"
 #import "RadarViewPortView.h"
 #import "THWebController.h"
+#import "TTTAttributedLabel.h"
 #import "WaterRefreshLoadMoreView.h"
 #import "ZYQSphereView.h"
 
