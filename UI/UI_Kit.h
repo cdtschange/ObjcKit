@@ -9,6 +9,7 @@
 #ifndef ObjcKit_UI_Kit_h
 #define ObjcKit_UI_Kit_h
 
+#import "ActivityHUD.h"
 #import "BTSpiderPlotterView.h"
 #import "CameraController.h"
 #import "CSAnimationView.h"
