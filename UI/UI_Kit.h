@@ -11,6 +11,7 @@
 
 #import "ActivityHUD.h"
 #import "BaseKitViewController.h"
+#import "BaseKitListViewController.h"
 #import "BTSpiderPlotterView.h"
 #import "CameraController.h"
 #import "CSAnimationView.h"

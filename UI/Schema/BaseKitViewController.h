@@ -7,11 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NetworkProvider.h"
 
 @interface BaseKitViewController : UIViewController
 
 //初始参数
-@property(strong,nonatomic) NSMutableDictionary *params;
+@property(strong,nonatomic)     NSMutableDictionary *params;
+@property (nonatomic, copy)     void (^statusBlock)(NetworkProviderStatus status, NSError *error);
+@property (nonatomic, copy)     void (^failureBlock)(NSError *);
 
 //初始化界面和初始数据（只执行一次的操作）
 - (void)initUIAndData;
@@ -21,4 +24,15 @@
 - (void)initNotification;
 //加载数据（可能会反复调用）
 - (void)loadData;
+
+
+//弹窗显示信息，过一段时间自动消失
+- (void)showInfoTip:(NSString *)tip;
+- (void)showInfoTip:(NSString *)tip complete:(void (^)())complete;
+- (void)showErrorTip:(NSError *)error;
+//显示遮罩加载
+- (void)showLoading;
+- (void)showLoadingWithText:(NSString *)text;
+//移除遮罩加载
+- (void)hideLoading;
 @end

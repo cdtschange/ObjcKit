@@ -19,6 +19,7 @@ typedef void (^void_action_block)(void);
 + (void)loadingInView:(UIView *)view text:(NSString *)text description:(NSString *)description;
 + (void)loadingInView:(UIView *)view text:(NSString *)text description:(NSString *)description customView:(UIImageView *)customView;
 + (void)removeLoadingInView:(UIView *)view;
++ (void)removeLoading;
 //提示遮罩
 + (void)tipInView:(UIView *)view keep:(int)second text:(NSString *)text complete:(void (^)())complete;
 + (void)tipInView:(UIView *)view keep:(int)second text:(NSString *)text description:(NSString *)description complete:(void (^)())complete;

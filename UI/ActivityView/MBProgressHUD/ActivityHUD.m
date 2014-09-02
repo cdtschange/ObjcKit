@@ -9,6 +9,8 @@
 #import "ActivityHUD.h"
 #import "MBProgressHUD.h"
 
+__weak UIView *_displayedActivityHUDView;
+
 @interface ActivityHUD()
 
 @end
@@ -32,6 +34,7 @@ BOOL dimBackground = YES;
     [self loadingInView:view text:text description:description customView:nil];
 }
 + (void)loadingInView:(UIView *)view text:(NSString *)text description:(NSString *)description customView:(UIImageView *)customView{
+    _displayedActivityHUDView = view;
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     if (text) {
         hud.labelText = text;
@@ -44,6 +47,9 @@ BOOL dimBackground = YES;
 + (void)removeLoadingInView:(UIView *)view{
     [MBProgressHUD hideHUDForView:view animated:YES];
 }
++ (void)removeLoading{
+    [self removeLoadingInView:_displayedActivityHUDView];
+}
 
 + (void)tipInView:(UIView *)view keep:(int)second text:(NSString *)text complete:(void (^)())complete{
     [self tipInView:view keep:second text:text description:nil complete:complete];
@@ -52,6 +58,7 @@ BOOL dimBackground = YES;
     [self tipInView:view keep:second text:text description:description customView:nil complete:complete];
 }
 + (void)tipInView:(UIView *)view keep:(int)second text:(NSString *)text description:(NSString *)description customView:(UIImageView *)customView complete:(void (^)())complete{
+    _displayedActivityHUDView = view;
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     if (text) {
         hud.labelText = text;
@@ -81,6 +88,7 @@ BOOL dimBackground = YES;
     [self progressInView:view text:text description:nil];
 }
 + (void)progressInView:(UIView *)view text:(NSString *)text description:(NSString *)description{
+    _displayedActivityHUDView = view;
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     if (text) {
         hud.labelText = text;
