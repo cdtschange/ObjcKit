@@ -17,6 +17,7 @@
 #import "MHTextField.h"
 #import "PulsingHalo.h"
 #import "RadarViewPortView.h"
+#import "WaterRefreshLoadMoreView.h"
 #import "ZYQSphereView.h"
 
 #endif
