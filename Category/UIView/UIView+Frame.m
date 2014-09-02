@@ -116,10 +116,8 @@
 {
     // 创建一个bitmap的context
     // 并把它设置成为当前正在使用的context
-    UIGraphicsBeginImageContext(self.bounds.size);
-    NSLog(@"%@", NSStringFromCGSize(self.bounds.size));
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0.0f);
     CGContextRef currnetContext = UIGraphicsGetCurrentContext();
-    //[view.layer drawInContext:currnetContext];
     [self.layer renderInContext:currnetContext];
     // 从当前context中创建一个改变大小后的图片
     UIImage* image = UIGraphicsGetImageFromCurrentImageContext();

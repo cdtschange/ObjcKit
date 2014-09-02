@@ -10,5 +10,6 @@
 #define ObjcKit_UIImage_Kit_h
 
 #import "UIImage+ImageEffects.h"
+#import "UIImage+Orientation.h"
 
 #endif
