@@ -41,7 +41,7 @@ BOOL dimBackground = YES;
     }
     hud.dimBackground = dimBackground;
 }
-+ (void)removeLoadingIn:(UIView *)view{
++ (void)removeLoadingInView:(UIView *)view{
     [MBProgressHUD hideHUDForView:view animated:YES];
 }
 

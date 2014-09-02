@@ -9,7 +9,8 @@
 #ifndef ObjcKit_NSString_Kit_h
 #define ObjcKit_NSString_Kit_h
 
-#import "NSString+Valid.h"
 #import "NSString+Encrypt.h"
+#import "NSString+Valid.h"
+#import "NSString+Wrapper.h"
 
 #endif
