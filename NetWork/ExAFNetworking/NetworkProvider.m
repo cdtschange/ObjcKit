@@ -62,18 +62,18 @@
     }
     __weak NetworkProvider *weakself = self;
     [request requestWithMethod:method path:path param:dict success:^(NSHTTPURLResponse *response, id responseObject) {
-        if (success) {
-            success(responseObject);
-        }
         if (weakself.statusBlock) {
             weakself.statusBlock(NetworkProviderStatusEnd,nil);
         }
-    } failure:^(NSHTTPURLResponse *response, NSError *error) {
-        if (failure) {
-            failure(error);
+        if (success) {
+            success(responseObject);
         }
+    } failure:^(NSHTTPURLResponse *response, NSError *error) {
         if (weakself.statusBlock) {
             weakself.statusBlock(NetworkProviderStatusFailed,error);
+        }
+        if (failure) {
+            failure(error);
         }
     }];
 }

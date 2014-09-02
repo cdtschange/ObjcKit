@@ -43,7 +43,6 @@
                 break;
             case NetworkProviderStatusFailed:
                 [ActivityHUD removeLoading];
-                [weakself showErrorTip:error];
                 break;
             default:
                 break;
@@ -63,12 +62,6 @@
     if (!view) {
         view = self.view;
     }
-    if (self.view.window) {
-        [ActivityHUD tipInView:self.view.window keep:BASEKIT_TIP_KEEP_SECOND text:tip complete:complete];
-    }else{
-        [ActivityHUD tipInView:self.view keep:BASEKIT_TIP_KEEP_SECOND text:tip complete:complete];
-    }
-
     if (tip.length>BASEKIT_TIP_MAXLENGTH) {
         [ActivityHUD tipInView:view keep:BASEKIT_TIP_KEEP_SECOND text:BASEKIT_TXT_TITLE description:tip complete:complete];
         return;
