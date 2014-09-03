@@ -7,6 +7,7 @@
 //
 
 //Import libsqlite3.dylib
+//Import libz.dylib
 //Import SystemConfiguration.framework
 //Import MobileCoreServices.framework
 #ifndef ObjcKit_ObjcKit_h
