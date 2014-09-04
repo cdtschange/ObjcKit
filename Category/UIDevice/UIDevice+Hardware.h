@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define IOS_7 [UIDevice isSystemiOS7orGreater]
+
 typedef NS_ENUM(NSInteger, UIDeviceScreenSize) {
     UIDeviceScreenSize35Inch = 0,
     UIDeviceScreenSize4Inch,

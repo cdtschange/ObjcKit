@@ -1,4 +1,11 @@
-// AFNetworking.h
+//
+//  UIButton+AFNetworking.h
+//
+//  Created by David Pettigrew on 6/12/12.
+//  Copyright (c) 2012 ELC Technologies. All rights reserved.
+//
+
+// Based upon UIImageView+AFNetworking.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 // 
@@ -21,24 +28,22 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "AFImageRequestOperation.h"
+
 #import <Availability.h>
 
-#ifndef _AFNETWORKING_
-    #define _AFNETWORKING_
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
 
-    #import "AFURLConnectionOperation.h"
+@interface UIButton (AFNetworking)
 
-    #import "AFHTTPRequestOperation.h"
-    #import "AFJSONRequestOperation.h"
-    #import "AFXMLRequestOperation.h"
-    #import "AFPropertyListRequestOperation.h"
-    #import "AFHTTPClient.h"
+- (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholderImage forState:(UIControlState)state;
+- (void)setImageWithURL:(NSURL *)url
+       placeholderImage:(UIImage *)placeholderImage
+               forState:(UIControlState)state
+                success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
+                failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failure;
 
-    #import "AFImageRequestOperation.h"
+@end
 
-    #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-        #import "AFNetworkActivityIndicatorManager.h"
-        #import "UIButton+AFNetworking.h"
-        #import "UIImageView+AFNetworking.h"
-    #endif
-#endif /* _AFNETWORKING_ */
+#endif

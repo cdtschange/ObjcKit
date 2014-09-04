@@ -10,5 +10,6 @@
 #define ObjcKit_UIView_Kit_h
 
 #import "UIView+Frame.h"
+#import "UIView+Rounded.h"
 
 #endif
