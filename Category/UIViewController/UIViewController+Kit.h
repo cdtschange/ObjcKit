@@ -10,5 +10,6 @@
 #define UIViewController_Kit_h
 
 #import "UIViewController+Route.h"
+#import "UIViewController+Photo.h"
 
 #endif

@@ -11,5 +11,6 @@
 
 #import "UIImage+ImageEffects.h"
 #import "UIImage+Orientation.h"
+#import "UIImage+Photo.h"
 
 #endif
