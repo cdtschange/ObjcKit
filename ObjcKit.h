@@ -10,6 +10,7 @@
 //Import libz.dylib
 //Import SystemConfiguration.framework
 //Import MobileCoreServices.framework
+//Import CoreTelephony.framework
 #ifndef ObjcKit_ObjcKit_h
 #define ObjcKit_ObjcKit_h
 

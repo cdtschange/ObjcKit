@@ -33,6 +33,7 @@
 - (instancetype)initWithOptions:(NSDictionary *)options {
     if ((self = [super init])) {
         self.options = options;
+        [self.simpleAuth load];
     }
     return self;
 }

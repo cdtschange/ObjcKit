@@ -7,14 +7,15 @@
 //
 
 #import "SimpleAuthSinaWeiboProvider.h"
-#import "SinaWeibo.h"
-#import "SinaWeiboRequest.h"
+#import "WeiboSDK.h"
+#import "JSONKit.h"
 
-@interface SimpleAuthSinaWeiboProvider()<SinaWeiboDelegate, SinaWeiboRequestDelegate>
+@interface SimpleAuthSinaWeiboProvider()<WeiboSDKDelegate, WBHttpRequestDelegate>
 
-@property (nonatomic, strong)       SinaWeibo           *engine;
-@property (nonatomic, copy)         void (^authorizeBlock)(BOOL, NSError *);
-@property (nonatomic, copy)         void (^requestBlock)(id, NSError *);
+@property (nonatomic, copy, readonly)   NSString*           baseURL;
+@property (nonatomic, copy)             NSString*           redirectURI;
+@property (nonatomic, copy)             void (^authorizeBlock)(BOOL, NSError *);
+@property (nonatomic, copy)             void (^requestBlock)(id, NSError *);
 
 @end
 
@@ -29,22 +30,20 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
 + (SimpleAuthSinaWeiboProvider *)shared{
     return shared_;
 }
+-(NSString *)baseURL{
+    return @"https://api.weibo.com/2/";
+}
 
 - (instancetype)initWithOptions:(NSDictionary *)options {
-    if ((self = [super init])) {
+    if ((self = [super initWithOptions:options])) {
         NSArray *keys = [options allKeys];
         if(![keys containsObject:SimpleAuthAppKey]||
-           ![keys containsObject:SimpleAuthAppSecret]||
-           ![keys containsObject:SimpleAuthRedirectURI]||
-           ![keys containsObject:SimpleAuthSSOCallbackScheme])
+           ![keys containsObject:SimpleAuthRedirectURI])
             return nil;
         self.options = options;
-        self.engine = [[SinaWeibo alloc] initWithAppKey:options[SimpleAuthAppKey]
-                                              appSecret:options[SimpleAuthAppSecret]
-                                         appRedirectURI:options[SimpleAuthRedirectURI]
-                                      ssoCallbackScheme:options[SimpleAuthSSOCallbackScheme]
-                                            andDelegate:self];
-        self.engine.delegate = self;
+        [WeiboSDK registerApp:options[SimpleAuthAppKey]];
+        self.redirectURI = options[SimpleAuthRedirectURI];
+        self.scope = @"all";
         shared_ = self;
     }
     return self;
@@ -58,22 +57,20 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
         }
     }
     self.authorizeBlock = completion;
-    [self.engine logIn];
+    WBAuthorizeRequest *request = [WBAuthorizeRequest request];
+    request.redirectURI = self.redirectURI;
+    request.scope = self.scope;
+    [WeiboSDK sendRequest:request];
 }
 -(void)unAuthorize{
-    [self.engine logOut];
+    [WeiboSDK logOutWithToken:self.simpleAuth.accessToken delegate:self withTag:@""];
     [self.simpleAuth clear];
 }
 -(BOOL)isAuthorized{
-    if([self.engine isLoggedIn]){
-        if([self.engine isAuthorizeExpired]){
+    if(self.simpleAuth.uid.length > 0 && self.simpleAuth.accessToken.length > 0 && self.simpleAuth.expirationDate){
+        NSDate *now = [NSDate date];
+        if([now compare:self.simpleAuth.expirationDate] == NSOrderedDescending){
             return NO;
-        }
-        if(self.simpleAuth.uid.length==0){
-            self.simpleAuth.uid = self.engine.userID;
-            self.simpleAuth.accessToken = self.engine.accessToken;
-            self.simpleAuth.expirationDate = self.engine.expirationDate;
-            [self.simpleAuth save];
         }
         return YES;
     }
@@ -84,172 +81,241 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
 - (BOOL)handleOpenURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication
 {
     if ([sourceApplication isEqualToString:@"com.sina.weibo"]) {
-        return [self.engine handleOpenURL:url];
+        return [WeiboSDK handleOpenURL:url delegate:self];
     }
     return NO;
 }
 
+-(BOOL)isInstalled
+{
+    return [WeiboSDK isWeiboAppInstalled];
+}
+
 #pragma mark -
 #pragma mark SinaWeiboDelegate
-- (void)sinaweiboDidLogIn:(SinaWeibo *)sinaweibo{
-    NSLog(@"[OAuth:SinaWeibo]userID=%@&accesstoken=%@&expirationDate =%@",
-          sinaweibo.userID, sinaweibo.accessToken, sinaweibo.expirationDate);
-    self.simpleAuth.uid = self.engine.userID;
-    self.simpleAuth.accessToken = self.engine.accessToken;
-    self.simpleAuth.expirationDate = self.engine.expirationDate;
-    [self.simpleAuth save];
-    if(self.authorizeBlock){
-        self.authorizeBlock(YES, nil);
+- (void)didReceiveWeiboResponse:(WBBaseResponse *)response{
+    if ([response isKindOfClass:WBSendMessageToWeiboResponse.class]){
+        if (response.statusCode == WeiboSDKResponseStatusCodeSuccess) {
+            NSLog(@"[OAuth:SinaWeibo]request success");
+            if(self.requestBlock){
+                self.requestBlock(response, nil);
+            }
+        }else{
+            NSError *error = [NSError errorWithDomain:@"SinaWeibo" code:response.statusCode userInfo:response.userInfo];
+            NSLog(@"[OAuth:SinaWeibo]request failed:%@",error);
+            if(self.requestBlock){
+                self.requestBlock(nil, error);
+            }
+        }
     }
-}
-- (void)sinaweiboDidLogOut:(SinaWeibo *)sinaweibo{
-    NSLog(@"[OAuth:SinaWeibo]login out");
-}
-- (void)sinaweiboLogInDidCancel:(SinaWeibo *)sinaweibo{
-    NSLog(@"[OAuth:SinaWeibo]login cancel");
-    if(self.authorizeBlock){
-        self.authorizeBlock(NO, nil);
-    }
-}
-- (void)sinaweibo:(SinaWeibo *)sinaweibo logInDidFailWithError:(NSError *)error{
-    NSLog(@"[OAuth:SinaWeibo]login fail:%@", error);
-    if(self.authorizeBlock){
-        self.authorizeBlock(NO, error);
-    }
-}
-- (void)sinaweibo:(SinaWeibo *)sinaweibo accessTokenInvalidOrExpired:(NSError *)error{
-    NSLog(@"[OAuth:SinaWeibo]login fail with access token expired:%@", error);
-    if(self.authorizeBlock){
-        self.authorizeBlock(NO, error);
+    else if ([response isKindOfClass:WBAuthorizeResponse.class]){
+        WBAuthorizeResponse *authResponse = (WBAuthorizeResponse *)response;
+        NSLog(@"[OAuth:SinaWeibo]userID=%@&accesstoken=%@&expirationDate =%@",
+              authResponse.userID, authResponse.accessToken, authResponse.expirationDate);
+        if (authResponse.accessToken.length>0) {
+            self.simpleAuth.uid = authResponse.userID;
+            self.simpleAuth.accessToken = authResponse.accessToken;
+            self.simpleAuth.expirationDate = authResponse.expirationDate;
+            [self.simpleAuth save];
+            if(self.authorizeBlock){
+                self.authorizeBlock(YES, nil);
+            }
+        }else{
+            NSError *error = [NSError errorWithDomain:@"SinaWeibo" code:response.statusCode userInfo:response.userInfo];
+            NSLog(@"[OAuth:SinaWeibo]login fail:%@", error);
+            if(self.authorizeBlock){
+                self.authorizeBlock(NO, error);
+            }
+        }
     }
 }
 
 #pragma mark -
 #pragma mark SinaWeiboRequestDelegate
-- (void)request:(SinaWeiboRequest *)request didFailWithError:(NSError *)error
-{
+- (void)request:(WBHttpRequest *)request didFinishLoadingWithResult:(NSString *)result{
+    id json = [result objectFromJSONString];
+    if (json[@"error_code"]) {
+        NSError *error = [NSError errorWithDomain:@"SinaWeibo" code:[json[@"error_code"] intValue] userInfo:json];
+        NSLog(@"[OAuth:SinaWeibo]request failed:%@",error);
+        if(self.requestBlock){
+            self.requestBlock(nil, error);
+        }
+    }else{
+        NSLog(@"[OAuth:SinaWeibo]request success");
+        if(self.requestBlock){
+            self.requestBlock(json, nil);
+        }
+    }
+}
+
+- (void)request:(WBHttpRequest *)request didFailWithError:(NSError *)error;{
     NSLog(@"[OAuth:SinaWeibo]request failed:%@",error);
     if(self.requestBlock){
         self.requestBlock(nil, error);
     }
 }
 
-- (void)request:(SinaWeiboRequest *)request didFinishLoadingWithResult:(id)result
-{
-    if ([request.url hasSuffix:@"statuses/update.json"]){
-        if ([result objectForKey:@"error_code"]){
-            NSLog(@"[OAuth:SinaWeibo]request failed:%@",result);
-            if(self.requestBlock){
-                NSError *error = [NSError errorWithDomain:@"SinaWeibo" code:[result[@"error_code"] intValue] userInfo:result];
-                self.requestBlock(nil, error);
-            }
-        }
-        else{
-            NSLog(@"[OAuth:SinaWeibo]request success:%@", result);
-            if(self.requestBlock){
-                self.requestBlock(result, nil);
-            }
-        }
-        return;
-    }
-    NSLog(@"[OAuth:SinaWeibo]request success:%@", result);
-    if(self.requestBlock){
-        self.requestBlock(result, nil);
-    }
-}
-
 #pragma mark - Other Interface
 - (void)getUserInfoWithCompletion:(void (^)(id responseObject, NSError *error))completion{
-    [self getUserInfoByUID:self.engine.userID completion:completion];
+    [self getUserInfoByUID:self.simpleAuth.uid completion:completion];
 }
 - (void)getUserInfoByUID:(NSString*)uid completion:(void (^)(id responseObject, NSError *error))completion{
     self.requestBlock = completion;
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:uid, @"uid", nil];
-    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"users/show.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 - (void)getUserInfoByName:(NSString *)name completion:(void (^)(id responseObject, NSError *error))completion{
     self.requestBlock = completion;
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:name, @"screen_name", nil];
-    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"users/show.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 -(void)getUserCountsByUIDs:(NSString *)uids completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:uids, @"uids", nil];
-    [self.engine requestWithURL:@"users/counts.json" params:params httpMethod:@"GET" delegate:self];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"users/counts.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 
 //微博
 - (void)shareWithText:(NSString *)text completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", nil];
-    [self.engine requestWithURL:@"users/update.json" params:params httpMethod:@"POST" delegate:self];
+    if ([WeiboSDK isWeiboAppInstalled]){
+        self.requestBlock = completion;
+        WBMessageObject *message = [WBMessageObject message];
+        message.text = text;
+        WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+        [WeiboSDK sendRequest:request];
+    }else{
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status",nil];
+        [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/update.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
+    }
 }
 - (void)shareWithText:(NSString *)text imageUrl:(NSString *)imageUrl completion:(void (^)(id responseObject, NSError *error))completion{
     self.requestBlock = completion;
+    WBMessageObject *message = [WBMessageObject message];
+    message.text = text;
+    WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+    [WeiboSDK sendRequest:request];
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", imageUrl, @"url",nil];
-    [self.engine requestWithURL:@"statuses/upload_url_text.json" params:params httpMethod:@"POST" delegate:self];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/upload_url_text.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
 }
 - (void)shareWithText:(NSString *)text image:(UIImage *)image completion:(void (^)(id responseObject, NSError *error))completion{
+    if ([WeiboSDK isWeiboAppInstalled]){
+        self.requestBlock = completion;
+        WBMessageObject *message = [WBMessageObject message];
+        message.text = text;
+        WBImageObject *imageObj = [WBImageObject object];
+        imageObj.imageData = UIImagePNGRepresentation(image);
+        message.imageObject = imageObj;
+        WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+        [WeiboSDK sendRequest:request];
+    }else{
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status",UIImagePNGRepresentation(image), @"pic", nil];
+        [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/upload.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
+    }
+}
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image webUrl:(NSString *)webUrl completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", image, @"pic",nil];
-    [self.engine requestWithURL:@"statuses/upload.json" params:params httpMethod:@"POST" delegate:self];
+    WBMessageObject *message = [WBMessageObject message];
+    message.text = text;
+    WBWebpageObject *webpage = [WBWebpageObject object];
+    webpage.objectID = [NSString stringWithFormat:@"%d", (int)[NSDate date].timeIntervalSince1970];
+    webpage.title = title;
+    webpage.description = description;
+    webpage.thumbnailData = UIImagePNGRepresentation(image);
+    webpage.webpageUrl = webUrl;
+    message.mediaObject = webpage;
+    WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+    [WeiboSDK sendRequest:request];
+}
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image musicUrl:(NSString *)musicUrl musicStreamUrl:(NSString *)musicStreamUrl musicLowBandUrl:(NSString *)musicLowBandUrl musicLowBandStreamUrl:(NSString *)musicLowBandStreamUrl completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    WBMessageObject *message = [WBMessageObject message];
+    message.text = text;
+    WBMusicObject *webpage = [WBMusicObject object];
+    webpage.objectID = [NSString stringWithFormat:@"%d", (int)[NSDate date].timeIntervalSince1970];
+    webpage.title = title;
+    webpage.description = description;
+    webpage.thumbnailData = UIImagePNGRepresentation(image);
+    webpage.musicUrl = musicUrl;
+    webpage.musicStreamUrl = musicStreamUrl;
+    webpage.musicLowBandUrl = musicLowBandUrl;
+    webpage.musicLowBandStreamUrl = musicLowBandStreamUrl;
+    message.mediaObject = webpage;
+    WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+    [WeiboSDK sendRequest:request];
+}
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image videoUrl:(NSString *)videoUrl videoStreamUrl:(NSString *)videoStreamUrl videoLowBandUrl:(NSString *)videoLowBandUrl videoLowBandStreamUrl:(NSString *)videoLowBandStreamUrl completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    WBMessageObject *message = [WBMessageObject message];
+    message.text = text;
+    WBVideoObject *webpage = [WBVideoObject object];
+    webpage.objectID = [NSString stringWithFormat:@"%d", (int)[NSDate date].timeIntervalSince1970];
+    webpage.title = title;
+    webpage.description = description;
+    webpage.thumbnailData = UIImagePNGRepresentation(image);
+    webpage.videoUrl = videoUrl;
+    webpage.videoStreamUrl = videoStreamUrl;
+    webpage.videoLowBandUrl = videoLowBandUrl;
+    webpage.videoLowBandStreamUrl = videoLowBandStreamUrl;
+    message.mediaObject = webpage;
+    WBSendMessageToWeiboRequest *request = [WBSendMessageToWeiboRequest requestWithMessage:message];
+    [WeiboSDK sendRequest:request];
 }
 -(void)getPublicStatusesWithCount:(int)count completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",nil];
-    [self.engine requestWithURL:@"statuses/public_timeline.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",count], @"count",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/public_timeline.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 -(void)getFriendsStatusesWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
-    [self.engine requestWithURL:@"statuses/friends_timeline.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",count], @"count",[NSString stringWithFormat:@"%d",page], @"page",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/friends_timeline.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
--(void)getStatusByID:(int)statusID completion:(void (^)(id, NSError *))completion{
+-(void)getStatusByID:(long long)statusID completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",nil];
-    [self.engine requestWithURL:@"statuses/show.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",statusID], @"id",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/show.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
--(void)delStatusByID:(int)statusID completion:(void (^)(id, NSError *))completion{
+-(void)delStatusByID:(long long)statusID completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",nil];
-    [self.engine requestWithURL:@"statuses/destroy.json" params:params httpMethod:@"POST" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",statusID], @"id",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"statuses/destroy.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
 }
 
 //评论
--(void)getCommentsByStatusID:(int)statusID count:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+-(void)getCommentsByStatusID:(long long)statusID count:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",@(count), @"count",@(page), @"page",nil];
-    [self.engine requestWithURL:@"comments/show.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",statusID], @"id",[NSString stringWithFormat:@"%d",count], @"count",[NSString stringWithFormat:@"%d",page], @"page",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/show.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 -(void)getMyCommentsWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
-    [self.engine requestWithURL:@"comments/by_me.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",count], @"count",[NSString stringWithFormat:@"%d",page], @"page",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/by_me.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 -(void)getCommentsToMeWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
-    [self.engine requestWithURL:@"comments/to_me.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",count], @"count",[NSString stringWithFormat:@"%d",page], @"page",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/to_me.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
 -(void)getCommentsMetionMeWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
-    [self.engine requestWithURL:@"comments/mentions.json" params:params httpMethod:@"GET" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%d",count], @"count",[NSString stringWithFormat:@"%d",page], @"page",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/mentions.json"] httpMethod:@"GET" params:params delegate:self withTag:nil];
 }
--(void)commentWithStatusID:(int)statusID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
+-(void)commentWithStatusID:(long long)statusID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",text, @"comment",nil];
-    [self.engine requestWithURL:@"comments/create.json" params:params httpMethod:@"POST" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",statusID], @"id",text, @"comment",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/create.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
 }
--(void)delCommentByID:(int)commentID completion:(void (^)(id, NSError *))completion{
+-(void)delCommentByID:(long long)commentID completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(commentID), @"cid",nil];
-    [self.engine requestWithURL:@"comments/destroy.json" params:params httpMethod:@"POST" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",commentID], @"cid",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/destroy.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
 }
--(void)replyCommentByStatusID:(int)statusID commentID:(int)commentID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
+-(void)replyCommentByStatusID:(long long)statusID commentID:(long long)commentID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",@(commentID), @"cid",text, @"comment",nil];
-    [self.engine requestWithURL:@"comments/destroy.json" params:params httpMethod:@"POST" delegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%lld",statusID], @"id",[NSString stringWithFormat:@"%lld",commentID], @"cid",text, @"comment",nil];
+    [WBHttpRequest requestWithAccessToken:self.simpleAuth.accessToken url:[self.baseURL stringByAppendingString:@"comments/destroy.json"] httpMethod:@"POST" params:params delegate:self withTag:nil];
 }
 
 

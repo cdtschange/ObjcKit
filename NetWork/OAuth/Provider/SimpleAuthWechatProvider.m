@@ -27,7 +27,7 @@ static SimpleAuthWechatProvider *shared_ = nil;
     return shared_;
 }
 - (instancetype)initWithOptions:(NSDictionary *)options {
-    if ((self = [super init])) {
+    if ((self = [super initWithOptions:options])) {
         NSArray *keys = [options allKeys];
         if(![keys containsObject:SimpleAuthAppKey])
             return nil;

@@ -8,6 +8,7 @@
 
 //Import SystemConfiguration.framework
 //Import MobileCoreServices.framework
+//Import CoreTelephony.framework
 //Import libz.dylib
 #ifndef ObjcKit_NetworkKit_h
 #define ObjcKit_NetworkKit_h

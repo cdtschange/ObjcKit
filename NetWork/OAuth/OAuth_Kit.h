@@ -7,6 +7,7 @@
 //
 
 //Import libz.dylib
+//Import CoreTelephony.framework
 #ifndef ObjcKit_OAuth_Kit_h
 #define ObjcKit_OAuth_Kit_h
 

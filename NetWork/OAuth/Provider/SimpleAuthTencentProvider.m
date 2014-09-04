@@ -30,7 +30,7 @@ static SimpleAuthTencentProvider *shared_ = nil;
     return shared_;
 }
 - (instancetype)initWithOptions:(NSDictionary *)options {
-    if ((self = [super init])) {
+    if ((self = [super initWithOptions:options])) {
         NSArray *keys = [options allKeys];
         if(![keys containsObject:SimpleAuthAppKey]||
            ![keys containsObject:SimpleAuthRedirectURI])
@@ -60,6 +60,9 @@ static SimpleAuthTencentProvider *shared_ = nil;
         }
         self.engine = [[TencentOAuth alloc] initWithAppId:options[SimpleAuthAppKey] andDelegate:self];
         self.engine.redirectURI = options[SimpleAuthRedirectURI];
+        self.engine.openId = self.simpleAuth.uid;
+        self.engine.accessToken = self.simpleAuth.accessToken;
+        self.engine.expirationDate = self.simpleAuth.expirationDate;
         shared_ = self;
     }
     return self;
