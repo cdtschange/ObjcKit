@@ -124,36 +124,6 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
     }
 }
 
-#pragma mark - Other Interface
-- (void)getUserInfoWithCompletion:(void (^)(id responseObject, NSError *error))completion{
-    [self getUserInfoByUID:self.engine.userID completion:completion];
-}
-- (void)getUserInfoByUID:(NSString*)uid completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:uid, @"uid", nil];
-    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
-}
-- (void)getUserInfoByName:(NSString *)name completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:name, @"screen_name", nil];
-    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
-}
-- (void)shareWithText:(NSString *)text completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", nil];
-    [self.engine requestWithURL:@"users/update.json" params:params httpMethod:@"POST" delegate:self];
-}
-- (void)shareWithText:(NSString *)text imageUrl:(NSString *)imageUrl completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", imageUrl, @"url",nil];
-    [self.engine requestWithURL:@"statuses/upload_url_text.json" params:params httpMethod:@"POST" delegate:self];
-}
-- (void)shareWithText:(NSString *)text image:(UIImage *)image completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", image, @"pic",nil];
-    [self.engine requestWithURL:@"statuses/upload.json" params:params httpMethod:@"POST" delegate:self];
-}
-
 #pragma mark -
 #pragma mark SinaWeiboRequestDelegate
 - (void)request:(SinaWeiboRequest *)request didFailWithError:(NSError *)error
@@ -187,4 +157,100 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
         self.requestBlock(result, nil);
     }
 }
+
+#pragma mark - Other Interface
+- (void)getUserInfoWithCompletion:(void (^)(id responseObject, NSError *error))completion{
+    [self getUserInfoByUID:self.engine.userID completion:completion];
+}
+- (void)getUserInfoByUID:(NSString*)uid completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:uid, @"uid", nil];
+    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
+}
+- (void)getUserInfoByName:(NSString *)name completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:name, @"screen_name", nil];
+    [self.engine requestWithURL:@"users/show.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getUserCountsByUIDs:(NSString *)uids completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:uids, @"uids", nil];
+    [self.engine requestWithURL:@"users/counts.json" params:params httpMethod:@"GET" delegate:self];
+}
+
+//微博
+- (void)shareWithText:(NSString *)text completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", nil];
+    [self.engine requestWithURL:@"users/update.json" params:params httpMethod:@"POST" delegate:self];
+}
+- (void)shareWithText:(NSString *)text imageUrl:(NSString *)imageUrl completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", imageUrl, @"url",nil];
+    [self.engine requestWithURL:@"statuses/upload_url_text.json" params:params httpMethod:@"POST" delegate:self];
+}
+- (void)shareWithText:(NSString *)text image:(UIImage *)image completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:text, @"status", image, @"pic",nil];
+    [self.engine requestWithURL:@"statuses/upload.json" params:params httpMethod:@"POST" delegate:self];
+}
+-(void)getPublicStatusesWithCount:(int)count completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",nil];
+    [self.engine requestWithURL:@"statuses/public_timeline.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getFriendsStatusesWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
+    [self.engine requestWithURL:@"statuses/friends_timeline.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getStatusByID:(int)statusID completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",nil];
+    [self.engine requestWithURL:@"statuses/show.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)delStatusByID:(int)statusID completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",nil];
+    [self.engine requestWithURL:@"statuses/destroy.json" params:params httpMethod:@"POST" delegate:self];
+}
+
+//评论
+-(void)getCommentsByStatusID:(int)statusID count:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",@(count), @"count",@(page), @"page",nil];
+    [self.engine requestWithURL:@"comments/show.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getMyCommentsWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
+    [self.engine requestWithURL:@"comments/by_me.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getCommentsToMeWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
+    [self.engine requestWithURL:@"comments/to_me.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)getCommentsMetionMeWithCount:(int)count page:(int)page completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(count), @"count",@(page), @"page",nil];
+    [self.engine requestWithURL:@"comments/mentions.json" params:params httpMethod:@"GET" delegate:self];
+}
+-(void)commentWithStatusID:(int)statusID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",text, @"comment",nil];
+    [self.engine requestWithURL:@"comments/create.json" params:params httpMethod:@"POST" delegate:self];
+}
+-(void)delCommentByID:(int)commentID completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(commentID), @"cid",nil];
+    [self.engine requestWithURL:@"comments/destroy.json" params:params httpMethod:@"POST" delegate:self];
+}
+-(void)replyCommentByStatusID:(int)statusID commentID:(int)commentID text:(NSString *)text completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:@(statusID), @"id",@(commentID), @"cid",text, @"comment",nil];
+    [self.engine requestWithURL:@"comments/destroy.json" params:params httpMethod:@"POST" delegate:self];
+}
+
+
 @end
