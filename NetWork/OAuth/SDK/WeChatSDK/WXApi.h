@@ -4,7 +4,7 @@
 //
 //  Created by Tencent on 12-2-28.
 //  Copyright (c) 2012年 Tencent. All rights reserved.
-//xcodebuild -configuration Release
+//
 
 #import <Foundation/Foundation.h>
 
@@ -105,10 +105,9 @@
 /*! @brief 发送请求到微信，等待微信返回onResp
  *
  * 函数调用后，会切换到微信的界面。第三方应用程序等待微信返回onResp。微信在异步处理完成后一定会调用onResp。支持以下类型
- * SendAuthReq、SendMessageToWXReq等。
+ * SendMessageToWXReq。
  * @param req 具体的发送请求，在调用函数后，请自己释放。
  * @return 成功返回YES，失败返回NO。
- * @note: SendMessageToWXReq仅支持iOS6及以下版本
  */
 +(BOOL) sendReq:(BaseReq*)req;
 
@@ -127,7 +126,6 @@
  * SendAuthReq、PayReq。
  * @param req 具体的发送请求，在调用函数后，请自己释放。
  * @return 成功返回YES，失败返回NO。
- * @note: 支持iOS7及以下版本
  */
 +(BOOL) safeSendReq:(BaseReq*)req;
 

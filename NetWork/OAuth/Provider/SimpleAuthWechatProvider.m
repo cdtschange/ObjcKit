@@ -72,7 +72,7 @@ static SimpleAuthWechatProvider *shared_ = nil;
 }
 
 #pragma mark - Other Interface
-- (void)shareWithText:(NSString *)text toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion{
+- (void)shareWithText:(NSString *)text toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
     SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
     req.bText = YES;
@@ -80,43 +80,81 @@ static SimpleAuthWechatProvider *shared_ = nil;
     req.scene = toAll?WXSceneTimeline:WXSceneSession;
     [WXApi sendReq:req];
 }
-- (void)shareWithText:(NSString *)text title:(NSString *)title image:(UIImage *)image webUrl:(NSString *)webUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion{
+- (void)shareWithText:(NSString *)text imageUrl:(NSString *)imageUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion{
+    self.requestBlock = completion;
+    WXMediaMessage *message = [WXMediaMessage message];
+    message.title       = text;
+    WXImageObject *ext = [WXImageObject object];
+    ext.imageUrl      = imageUrl;
+    message.mediaObject = ext;
+    SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
+    req.bText   = NO;
+    req.message = message;
+    req.scene = toAll?WXSceneTimeline:WXSceneSession;
+    [WXApi sendReq:req];
+}
+- (void)shareWithText:(NSString *)text image:(UIImage *)image toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion{
+    WXMediaMessage *message = [WXMediaMessage message];
+    message.title       = text;
+    WXImageObject *ext = [WXImageObject object];
+    ext.imageData      = UIImagePNGRepresentation(image);
+    message.mediaObject = ext;
+    SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
+    req.bText   = NO;
+    req.message = message;
+    req.scene = toAll?WXSceneTimeline:WXSceneSession;
+    [WXApi sendReq:req];
+}
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image webUrl:(NSString *)webUrl toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
     WXMediaMessage *message = [WXMediaMessage message];
     message.title       = title;
     message.description = text;
     [message setThumbImage:image];
-
     WXWebpageObject *ext = [WXWebpageObject object];
     ext.webpageUrl      = webUrl;
     message.mediaObject = ext;
-
-    // 发送消息
     SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
     req.bText   = NO;
     req.message = message;
     req.scene = toAll?WXSceneTimeline:WXSceneSession;
     [WXApi sendReq:req];
 }
-- (void)shareWithText:(NSString *)text title:(NSString *)title image:(UIImage *)image webUrl:(NSString *)webUrl audioUrl:(NSString *)audioUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion{
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image musicUrl:(NSString *)musicUrl musicStreamUrl:(NSString *)musicStreamUrl musicLowBandUrl:(NSString *)musicLowBandUrl musicLowBandStreamUrl:(NSString *)musicLowBandStreamUrl toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion{
     self.requestBlock = completion;
     WXMediaMessage *message = [WXMediaMessage message];
     message.title       = title;
     message.description = text;
     [message setThumbImage:image];
-
     WXMusicObject *ext = [WXMusicObject object];
-    ext.musicUrl = webUrl;
-    ext.musicDataUrl = audioUrl;
+    ext.musicUrl = musicUrl;
+    ext.musicDataUrl = musicStreamUrl;
+    ext.musicLowBandUrl = musicLowBandUrl;
+    ext.musicLowBandDataUrl = musicLowBandStreamUrl;
     message.mediaObject = ext;
-
-    // 发送消息
     SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
     req.bText   = NO;
     req.message = message;
     req.scene = toAll?WXSceneTimeline:WXSceneSession;
     [WXApi sendReq:req];
 }
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image videoUrl:(NSString *)videoUrl videoLowBandUrl:(NSString *)videoLowBandUrl toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion{
+    self.requestBlock = completion;
+    WXMediaMessage *message = [WXMediaMessage message];
+    message.title       = title;
+    message.description = text;
+    [message setThumbImage:image];
+    WXVideoObject *ext = [WXVideoObject object];
+    ext.videoUrl = videoUrl;
+    ext.videoLowBandUrl = videoLowBandUrl;
+    message.mediaObject = ext;
+    SendMessageToWXReq* req = [[SendMessageToWXReq alloc] init];
+    req.bText   = NO;
+    req.message = message;
+    req.scene = toAll?WXSceneTimeline:WXSceneSession;
+    [WXApi sendReq:req];
+}
+
 - (void)payWithAppID:(NSString *)appID partnerID:(NSString *)partnerID prepayID:(NSString *)prepayID nonceStr:(NSString *)nonceStr timeStamp:(int)timeStamp package:(NSString *)package sign:(NSString *)sign completion:(void (^)(id responseObject, NSError *error))completion{
     self.requestBlock = completion;
     PayReq *req = [[PayReq alloc] init];

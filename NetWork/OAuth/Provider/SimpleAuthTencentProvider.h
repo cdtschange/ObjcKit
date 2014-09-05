@@ -26,5 +26,4 @@
 - (void)shareToQQFriendWithTitle:(NSString*)title image:(UIImage*)image description:(NSString*)description newsUrl:(NSString*)newsUrl completion:(void (^)(id responseObject, NSError *error))completion;
 - (void)shareToQQFriendWithTitle:(NSString*)title image:(UIImage*)image description:(NSString*)description audioUrl:(NSString*)audioUrl completion:(void (^)(id responseObject, NSError *error))completion;
 - (void)shareToQQFriendWithTitle:(NSString*)title image:(UIImage*)image description:(NSString*)description videoUrl:(NSString*)videoUrl completion:(void (^)(id responseObject, NSError *error))completion;
-- (void)shareToQzoneWithText:(NSString *)text title:(NSString *)title comment:(NSString *)comment url:(NSString *)url imageUrl:(NSString *)imageUrl completion:(void (^)(id responseObject, NSError *error))completion;
 @end

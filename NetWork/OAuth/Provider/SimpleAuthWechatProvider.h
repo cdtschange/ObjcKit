@@ -20,8 +20,13 @@
 
 //分享
 - (void)shareWithText:(NSString *)text toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
-- (void)shareWithText:(NSString *)text title:(NSString *)title image:(UIImage *)image webUrl:(NSString *)webUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
-- (void)shareWithText:(NSString *)text title:(NSString *)title image:(UIImage *)image webUrl:(NSString *)webUrl audioUrl:(NSString *)audioUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
+- (void)shareWithText:(NSString *)text imageUrl:(NSString *)imageUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
+- (void)shareWithText:(NSString *)text image:(UIImage *)image toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
+- (void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image webUrl:(NSString *)webUrl toAll:(BOOL)toAll completion:(void (^)(id responseObject, NSError *error))completion;
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image musicUrl:(NSString *)musicUrl musicStreamUrl:(NSString *)musicStreamUrl musicLowBandUrl:(NSString *)musicLowBandUrl musicLowBandStreamUrl:(NSString *)musicLowBandStreamUrl toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion;
+-(void)shareWithText:(NSString *)text title:(NSString *)title description:(NSString *)description image:(UIImage *)image videoUrl:(NSString *)videoUrl videoLowBandUrl:(NSString *)videoLowBandUrl toAll:(BOOL)toAll completion:(void (^)(id, NSError *))completion;
+
+//支付
 - (void)payWithAppID:(NSString *)appID partnerID:(NSString *)partnerID prepayID:(NSString *)prepayID nonceStr:(NSString *)nonceStr timeStamp:(int)timeStamp package:(NSString *)package sign:(NSString *)sign completion:(void (^)(id responseObject, NSError *error))completion;
 
 @end

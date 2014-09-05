@@ -129,6 +129,8 @@ static SimpleAuthSinaWeiboProvider *shared_ = nil;
         }
     }
 }
+-(void)didReceiveWeiboRequest:(WBBaseRequest *)request{
+}
 
 #pragma mark -
 #pragma mark SinaWeiboRequestDelegate

@@ -13,9 +13,10 @@
 
 @interface SimpleAuthTencentProvider()<TencentSessionDelegate,QQApiInterfaceDelegate>
 
-@property(nonatomic,strong)         TencentOAuth        *engine ;
-@property (nonatomic, copy)         void (^authorizeBlock)(BOOL, NSError *);
-@property (nonatomic, copy)         void (^requestBlock)(id, NSError *);
+@property (nonatomic, copy, readonly)   NSString*           baseURL;
+@property(nonatomic,strong)             TencentOAuth        *engine ;
+@property (nonatomic, copy)             void (^authorizeBlock)(BOOL, NSError *);
+@property (nonatomic, copy)             void (^requestBlock)(id, NSError *);
 
 @end
 
@@ -29,6 +30,9 @@ static SimpleAuthTencentProvider *shared_ = nil;
 + (SimpleAuthTencentProvider *)shared{
     return shared_;
 }
+-(NSString *)baseURL{
+    return @"http://openapi.tencentyun.com/v3/";
+}
 - (instancetype)initWithOptions:(NSDictionary *)options {
     if ((self = [super initWithOptions:options])) {
         NSArray *keys = [options allKeys];
@@ -37,26 +41,7 @@ static SimpleAuthTencentProvider *shared_ = nil;
             return nil;
         self.options = options;
         if (!self.permissions) {
-            self.permissions = [NSArray arrayWithObjects:
-                                kOPEN_PERMISSION_GET_USER_INFO,
-                                kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
-                                kOPEN_PERMISSION_ADD_ONE_BLOG,
-                                kOPEN_PERMISSION_ADD_PIC_T,
-                                kOPEN_PERMISSION_ADD_SHARE,
-                                kOPEN_PERMISSION_ADD_TOPIC,
-                                kOPEN_PERMISSION_CHECK_PAGE_FANS,
-                                kOPEN_PERMISSION_GET_FANSLIST,
-                                kOPEN_PERMISSION_GET_IDOLLIST,
-                                kOPEN_PERMISSION_GET_INFO,
-                                kOPEN_PERMISSION_GET_OTHER_INFO,
-                                kOPEN_PERMISSION_GET_REPOST_LIST,
-                                kOPEN_PERMISSION_LIST_ALBUM,
-                                kOPEN_PERMISSION_UPLOAD_PIC,
-                                kOPEN_PERMISSION_GET_VIP_INFO,
-                                kOPEN_PERMISSION_GET_VIP_RICH_INFO,
-                                kOPEN_PERMISSION_GET_INTIMATE_FRIENDS_WEIBO,
-                                kOPEN_PERMISSION_MATCH_NICK_TIPS_WEIBO,
-                                nil];
+            self.permissions = [NSArray arrayWithObjects:@"all", nil];
         }
         self.engine = [[TencentOAuth alloc] initWithAppId:options[SimpleAuthAppKey] andDelegate:self];
         self.engine.redirectURI = options[SimpleAuthRedirectURI];
@@ -218,16 +203,6 @@ static SimpleAuthTencentProvider *shared_ = nil;
     QQApiSendResultCode sent = [QQApiInterface sendReq:req];
     [self handleSendResult:sent];
 }
-- (void)shareToQzoneWithText:(NSString *)text title:(NSString *)title comment:(NSString *)comment url:(NSString *)url imageUrl:(NSString *)imageUrl completion:(void (^)(id responseObject, NSError *error))completion{
-    self.requestBlock = completion;
-    TCAddShareDic *params = [TCAddShareDic dictionary];
-    params.paramTitle = title;
-    params.paramComment = comment;
-    params.paramSummary =  text;
-    params.paramImages = imageUrl;
-    params.paramUrl = url;
-    [self.engine addShareWithParams:params];
-}
 
 
 #pragma mark -
@@ -320,6 +295,8 @@ static SimpleAuthTencentProvider *shared_ = nil;
         default:
             break;
     }
+}
+- (void)isOnlineResponse:(NSDictionary *)response{
 }
 
 @end
