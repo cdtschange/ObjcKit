@@ -26,7 +26,7 @@ static const void *keyUseMarginLayout = "keyUseMarginLayout";
             if (self.useMarginLayout) {
                 [self setLeftBarButtonItems:@[negativeSeperator, _leftBarButtonItem]];
             } else {
-                [self setRightBarButtonItem:_leftBarButtonItem animated:NO];
+                [self setLeftBarButtonItem:_leftBarButtonItem animated:NO];
             }
         }
         else
