@@ -21,10 +21,10 @@
 -(id)init{
     if (self = [super init]) {
         self.requestArray = [NSMutableArray new];
-        self.request = [[ExAFHttpRequest alloc] init];
-        self.request.baseURL = REACHABILITY_URL;
+        ExAFHttpRequest *request = [[ExAFHttpRequest alloc] init];
+        request.baseURL = REACHABILITY_URL;
         __weak NetworkProvider *weakself = self;
-        [self.request.client setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        [request.client setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             weakself.reachabilityStatus = status;
             if(weakself.reachbilityBlock){
                 weakself.reachbilityBlock(status);
@@ -34,7 +34,12 @@
     return self;
 }
 -(void)setRequest:(ExAFHttpRequest *)request{
-    [self.requestArray addObject:request];
+    if (request) {
+        [self.requestArray addObject:request];
+        if (_request) {
+            [_request cancel];
+        }
+    }
     _request = request;
 }
 
@@ -68,6 +73,8 @@
         if (success) {
             success(responseObject);
         }
+        [weakself.requestArray removeObject:weakself.request];
+        weakself.request = nil;
     } failure:^(NSHTTPURLResponse *response, NSError *error) {
         if (weakself.statusBlock) {
             weakself.statusBlock(NetworkProviderStatusFailed,error);
@@ -75,6 +82,8 @@
         if (failure) {
             failure(error);
         }
+        [weakself.requestArray removeObject:weakself.request];
+        weakself.request = nil;
     }];
 }
 
@@ -84,9 +93,13 @@
     NSString *methodStr = [request enumExAFNetworkHttpMethodToString:method];
     NSString *pathEncode = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSMutableURLRequest *req = [request.client requestWithMethod:methodStr path:pathEncode parameters:params];
-    return [NSString stringWithFormat:@"%@", req.URL];
+    NSString *url = [NSString stringWithFormat:@"%@", req.URL];
+    request = nil;
+    return url;
 }
-
+-(void)cancelRequest{
+    [self.request cancel];
+}
 +(void)clearCookies{
     [ExAFHttpRequest clearCookies];
 }

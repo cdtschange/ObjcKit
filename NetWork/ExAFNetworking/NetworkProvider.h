@@ -35,14 +35,14 @@ typedef enum NetworkProviderStatus {
                success:(void (^)(id responseObject))success
                failure:(void (^)(NSError *error))failure;
 -(void)requestXMLWithPath:(NSString *)path params:(NSDictionary *)params method:(ExAFNetworkHttpMethod)method
-                   success:(void (^)(id responseObject))success
+                  success:(void (^)(id responseObject))success
                   failure:(void (^)(NSError *error))failure;
 -(void)requestJSONWithPath:(NSString *)path params:(NSDictionary *)params method:(ExAFNetworkHttpMethod)method
                    success:(void (^)(id responseObject))success
                    failure:(void (^)(NSError *error))failure;
 
 -(NSString *)getFullURLWithPath:(NSString *)path params:(NSDictionary *)params method:(ExAFNetworkHttpMethod)method;
-
+-(void)cancelRequest;
 +(void)clearCookies;
 
 @end

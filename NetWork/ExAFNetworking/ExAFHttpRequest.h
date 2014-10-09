@@ -32,6 +32,7 @@ typedef enum {
 -(void)willRequest:(NSMutableURLRequest *)request;
 -(void)didGetResponse:(NSHTTPURLResponse *)response;
 
+-(void)cancel;
 -(NSString *)enumExAFNetworkHttpMethodToString:(ExAFNetworkHttpMethod)method;
 
 +(void)clearCookies;

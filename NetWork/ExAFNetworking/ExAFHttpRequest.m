@@ -85,6 +85,9 @@
     }];
     [operation start];
 }
+-(void)cancel{
+    [self.client.operationQueue cancelAllOperations];
+}
 
 -(NSString *)enumExAFNetworkHttpMethodToString:(ExAFNetworkHttpMethod)method{
     NSString *methodStr;
