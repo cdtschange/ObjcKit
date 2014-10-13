@@ -12,6 +12,7 @@
 #import "NSString+Encrypt.h"
 #import "NSString+Money.h"
 #import "NSString+Valid.h"
+#import "NSString+Type.h"
 #import "NSString+Wrapper.h"
 
 #endif
