@@ -12,9 +12,5 @@
 #ifndef ObjcKit_OAuth_Kit_h
 #define ObjcKit_OAuth_Kit_h
 
-#import "SimpleAuthSinaWeiboProvider.h"
-#import "SimpleAuthTencentProvider.h"
-#import "SimpleAuthWechatProvider.h"
-#import "SimpleAuthAliPayProvider.h"
 
 #endif

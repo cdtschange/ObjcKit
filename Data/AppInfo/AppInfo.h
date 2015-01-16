@@ -22,6 +22,7 @@
 + (NSString *)bundleVersion;
 //App Bundle Short Version String
 + (NSString *)bundleShortVersionString;
++ (int)bundleShortVersionNumber;
 //OpenUDID
 - (NSString *)IMEI;
 @end

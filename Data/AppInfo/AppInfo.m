@@ -61,6 +61,13 @@ AppInfo * _sharedAppInfo = nil;
 + (NSString *)bundleShortVersionString{
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
 }
+//App Bundle Short Version Number
++ (int)bundleShortVersionNumber{
+    NSString *str = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    int num = [[str stringByReplacingOccurrencesOfString:@"." withString:@""] intValue];
+    num*=10;
+    return num;
+}
 
 - (NSString *)IMEI
 {
