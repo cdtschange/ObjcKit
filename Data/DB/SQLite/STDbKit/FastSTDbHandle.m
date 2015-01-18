@@ -147,7 +147,7 @@
                     sqlite3_bind_null(stmt, i);
                 } else {
                     NSData *data = [NSData dataWithData:value];
-                    long len = [data length];
+                    int len = (int)[data length];
                     const void *bytes = [data bytes];
                     sqlite3_bind_blob(stmt, i, bytes, len, NULL);
                 }
@@ -440,7 +440,7 @@
                     sqlite3_bind_null(stmt, i);
                 } else {
                     NSData *data = [NSData dataWithData:value];
-                    long len = [data length];
+                    int len = (int)[data length];
                     const void *bytes = [data bytes];
                     sqlite3_bind_blob(stmt, i, bytes, len, NULL);
                 }
@@ -543,7 +543,7 @@
         }
             break;
     }
-    return NO;
+    return nil;
 }
 
 + (void)class:(Class)aClass getPropertyNameList:(NSMutableArray *)proName preName:(NSString *)preName

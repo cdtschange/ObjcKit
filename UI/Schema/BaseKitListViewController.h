@@ -22,7 +22,7 @@ typedef enum{
 @property(assign, nonatomic) int listLoadNumber;
 @property(assign, nonatomic) int listMaxNumber;
 @property(strong, nonatomic) UIColor *tipTextColor;
-@property(assign, nonatomic) NSInteger dataIndex;
+@property(assign, nonatomic) int dataIndex;
 @property(strong, nonatomic) NSMutableArray *dataArray;
 @property(strong, nonatomic) WaterRefreshLoadMoreView *refreshLoadMoreView;
 

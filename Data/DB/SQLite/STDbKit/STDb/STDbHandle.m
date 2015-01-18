@@ -410,7 +410,7 @@
     NSMutableArray *propertyArr = [NSMutableArray arrayWithCapacity:0];
     propertyArr = [NSMutableArray arrayWithArray:[self sqlite_columns:obj.class]];
     
-    unsigned int argNum = [propertyArr count];
+    NSUInteger argNum = [propertyArr count];
     
     NSMutableString *sql_NSString = [[NSMutableString alloc] initWithFormat:@"insert into %@ values(?)", tableName];
     NSRange range = [sql_NSString rangeOfString:@"?"];
@@ -442,7 +442,7 @@
                     NSData *data = [NSData dataWithData:value];
                     long len = [data length];
                     const void *bytes = [data bytes];
-                    sqlite3_bind_blob(stmt, i, bytes, len, NULL);
+                    sqlite3_bind_blob(stmt, i, bytes, (int)len, NULL);
                 }
                 
             } else if ([column_type_string isEqualToString:@"text"]) {
@@ -697,7 +697,7 @@
     const char *errmsg = 0;
     if (sqlite3_prepare_v2(sqlite3DB, [createStr UTF8String], -1, &stmt, &errmsg) == SQLITE_OK) {
         
-        NSInteger i = 1;
+        int i = 1;
         for (NSString *key in keys) {
             
             if ([key isEqualToString:kDbId]) {
@@ -715,7 +715,7 @@
                     NSData *data = [NSData dataWithData:value];
                     long len = [data length];
                     const void *bytes = [data bytes];
-                    sqlite3_bind_blob(stmt, i, bytes, len, NULL);
+                    sqlite3_bind_blob(stmt, i, bytes, (int)len, NULL);
                 }
                 
             } else if ([column_type_string isEqualToString:@"text"]) {

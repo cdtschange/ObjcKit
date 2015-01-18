@@ -66,7 +66,7 @@
  */
 - (BOOL)updateToDb
 {
-    NSString *condition = [NSString stringWithFormat:@"%@=%d", kDbId, self.id__];
+    NSString *condition = [NSString stringWithFormat:@"%@=%ld", kDbId, (long)self.id__];
     return [STDbHandle updateDbObject:self condition:condition];
 }
 
@@ -77,7 +77,7 @@
  */
 - (BOOL)removeFromDb
 {
-    NSString *where = [NSString stringWithFormat:@"%@=%d", kDbId, self.id__];
+    NSString *where = [NSString stringWithFormat:@"%@=%ld", kDbId, (long)self.id__];
     return [STDbHandle removeDbObjects:[self class] condition:where];
 }
 

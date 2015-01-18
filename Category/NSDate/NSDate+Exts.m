@@ -184,7 +184,7 @@
 - (NSDate *)dateByAddingMonths:(NSInteger)months
 {
     NSDate *date = self;
-    NSInteger m = abs(months);
+    NSInteger m = abs((int)months);
     NSInteger flag = months/m;
     
     for (int i = 0; i < m; i++) {
@@ -198,7 +198,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(17, 2);
-    NSString *yearStr = [NSString stringWithFormat:@"%2d", second];
+    NSString *yearStr = [NSString stringWithFormat:@"%2d", (int)second];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     NSDate *retDate = [NSDate dateWithString:dateStr];
     return retDate;
@@ -208,7 +208,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(14, 2);
-    NSString *yearStr = [NSString stringWithFormat:@"%2d", minute];
+    NSString *yearStr = [NSString stringWithFormat:@"%2d", (int)minute];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     NSDate *retDate = [NSDate dateWithString:dateStr];
     return retDate;
@@ -218,7 +218,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(11, 2);
-    NSString *yearStr = [NSString stringWithFormat:@"%2d", hour];
+    NSString *yearStr = [NSString stringWithFormat:@"%2d", (int)hour];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     NSDate *retDate = [NSDate dateWithString:dateStr];
     return retDate;
@@ -228,7 +228,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(8, 2);
-    NSString *yearStr = [NSString stringWithFormat:@"%2d", day];
+    NSString *yearStr = [NSString stringWithFormat:@"%2d", (int)day];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     NSDate *retDate = [NSDate dateWithString:dateStr];
     return retDate;
@@ -238,7 +238,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(5, 2);
-    NSString *yearStr = [NSString stringWithFormat:@"%2d", month];
+    NSString *yearStr = [NSString stringWithFormat:@"%2d", (int)month];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     return [NSDate dateWithString:dateStr];
 }
@@ -247,7 +247,7 @@
 {
     NSString *dateStr = [self string];
     NSRange range = NSMakeRange(0, 4);
-    NSString *yearStr = [NSString stringWithFormat:@"%4d", year];
+    NSString *yearStr = [NSString stringWithFormat:@"%4d", (int)year];
     dateStr = [dateStr stringByReplacingCharactersInRange:range withString:yearStr];
     return [NSDate dateWithString:dateStr];
 }
@@ -440,7 +440,7 @@
 - (NSInteger)week
 {
     NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:self];
-	return components.week;
+	return components.weekOfMonth;
 }
 
 - (NSInteger)weekday

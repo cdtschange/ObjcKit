@@ -44,7 +44,7 @@
 
 - (BOOL)updateToDb
 {
-    NSString *condition = [NSString stringWithFormat:@"%@=%d", kDbId, self.id__];
+    NSString *condition = [NSString stringWithFormat:@"%@=%ld", kDbId, (long)self.id__];
     return [FastSTDbHandle updateDbObject:self condition:condition];
 }
 
