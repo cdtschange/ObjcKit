@@ -247,8 +247,8 @@
 //		NSArray *viewControllers = [NSArray arrayWithObject:contentViewController_];
 //		[self.navigationController setViewControllers:viewControllers];
 //	}
-
-	UIWindow *window = [[UIApplication sharedApplication] windows][0];
+    int count = (int)[[UIApplication sharedApplication] windows].count;
+	UIWindow *window = [[UIApplication sharedApplication] windows][count-1];
 	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 	[self.view setFrame:[window convertRect:appFrame fromView:nil]];
 	[window addSubview:[self view]];
