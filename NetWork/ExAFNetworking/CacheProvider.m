@@ -71,7 +71,6 @@ CacheProvider * _sharedCacheProvider = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *filePath = [self.path stringByAppendingPathComponent:name];
     if(![fileManager fileExistsAtPath:filePath]){
-        NSLog(@"[CacheProvider] Cache is nil by: %@",key);
         return NO;
     }
     return YES;
@@ -86,10 +85,8 @@ CacheProvider * _sharedCacheProvider = nil;
     int currentTime = [[NSDate date] timeIntervalSince1970];
     int expireTime = [[data objectForKey:DEFAULT_CACHEPROVIDER_FIELD_EXPIRETIME] intValue];
     if (currentTime > expireTime){
-        NSLog(@"[CacheProvider] Cache expired by: %@",key);
         return NO;
     }else{
-        NSLog(@"[CacheProvider] Cache valide by: %@",key);
         return YES;
     }
 }
@@ -101,7 +98,6 @@ CacheProvider * _sharedCacheProvider = nil;
     NSString *filePath = [self.path stringByAppendingPathComponent:name];
     NSMutableDictionary * data = [[NSMutableDictionary alloc] initWithContentsOfFile:filePath];
     NSString * content = [data objectForKey:DEFAULT_CACHEPROVIDER_FIELD_DATA];
-    NSLog(@"[CacheProvider] Cache hit by: %@",content);
     return content;
 }
 -(int)cacheTimeByKey:(NSString *)key{
@@ -139,10 +135,8 @@ CacheProvider * _sharedCacheProvider = nil;
     if (result){
         int fsize = [self fileSizeForFile:filePath fileManager:[NSFileManager defaultManager]];
         curSize+=fsize;
-        NSLog(@"[CacheProvider] Cached Success from: %@",key);
         return YES;
     }
-    NSLog(@"[CacheProvider] Cached Failed from: %@",key);
     return NO;
 }
 

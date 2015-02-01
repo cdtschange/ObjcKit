@@ -36,32 +36,6 @@
     self.refreshLoadMoreView.loadMoreIndicatorWord = BASEKIT_TXT_LOADING;
 
     __weak BaseKitListViewController *weakself = self;
-    self.listStatusBlock = ^(NetworkProviderStatus status, NSError *error) {
-        switch (status) {
-            case NetworkProviderStatusBegin:
-                if (weakself.isRefresh) {
-                    [weakself.refreshLoadMoreView startRefreshWithExpansionWithoutDelegate];
-                }
-                break;
-            case NetworkProviderStatusEnd:
-                if (weakself.isRefresh) {
-                    [weakself.refreshLoadMoreView endRefreshWithRemindsWords:BASEKIT_TXT_REFRESH_SUCCESS remindImage:nil];
-                }else{
-                    [weakself.refreshLoadMoreView endLoadingMoreWithRemind:nil];
-                }
-                break;
-            case NetworkProviderStatusFailed:
-                if (weakself.isRefresh) {
-                    [weakself.refreshLoadMoreView endRefreshWithRemindsWords:BASEKIT_TXT_REFRESH_FAILED remindImage:nil];
-                }else{
-                    [weakself.refreshLoadMoreView endLoadingMoreWithRemind:nil];
-                }
-                [weakself showErrorTip:error];
-                break;
-            default:
-                break;
-        }
-    };
     self.listFailureBlock = ^(NSError *error) {
         if (weakself.isRefresh) {
             [weakself.refreshLoadMoreView endRefreshWithRemindsWords:BASEKIT_TXT_REFRESH_FAILED remindImage:nil];
@@ -134,6 +108,56 @@
 - (void)loadMoreViewEndLoad:(WaterRefreshLoadMoreView *)refreshView
 {
 }
+
+
+- (void)setListNetworkStateOfTask:(NSURLSessionTask *)task{
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidResumeNotification object:nil];
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidSuspendNotification object:nil];
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidCompleteNotification object:nil];
+    
+    if (task) {
+        if (task.state == NSURLSessionTaskStateRunning) {
+            [notificationCenter addObserver:self selector:@selector(task_list_resume:) name:AFNetworkingTaskDidResumeNotification object:task];
+            [notificationCenter addObserver:self selector:@selector(task_list_end:) name:AFNetworkingTaskDidCompleteNotification object:task];
+            [notificationCenter addObserver:self selector:@selector(task_list_suspend:) name:AFNetworkingTaskDidSuspendNotification object:task];
+        } else {
+            NSNotification *notify = [[NSNotification alloc] initWithName:@"" object:task userInfo:nil];
+            [self task_list_end:notify];
+        }
+    }
+}
+- (void)task_list_resume:(NSNotification *)notify{
+    NSURLSessionTask *task = notify.object;
+    [self.networkTasks addObject:task];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.isRefresh) {
+            [self.refreshLoadMoreView startRefreshWithExpansionWithoutDelegate];
+        }
+    });
+}
+- (void)task_list_end:(NSNotification *)notify{
+    NSURLSessionTask *task = notify.object;
+    [self.networkTasks removeObject:task];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.isRefresh) {
+            [self.refreshLoadMoreView endRefreshWithRemindsWords:BASEKIT_TXT_REFRESH_SUCCESS remindImage:nil];
+        }else{
+            [self.refreshLoadMoreView endLoadingMoreWithRemind:nil];
+        }
+    });
+}
+- (void)task_list_suspend:(NSNotification *)notify{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.isRefresh) {
+            [self.refreshLoadMoreView endRefreshWithRemindsWords:BASEKIT_TXT_REFRESH_SUCCESS remindImage:nil];
+        }else{
+            [self.refreshLoadMoreView endLoadingMoreWithRemind:nil];
+        }
+    });
+}
+
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {

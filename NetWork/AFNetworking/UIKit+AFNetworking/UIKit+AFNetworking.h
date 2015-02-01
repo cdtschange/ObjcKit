@@ -1,24 +1,17 @@
+// UIKit+AFNetworking.h
 //
-//  UIButton+AFNetworking.h
+// Copyright (c) 2013 AFNetworking (http://afnetworking.com/)
 //
-//  Created by David Pettigrew on 6/12/12.
-//  Copyright (c) 2012 ELC Technologies. All rights reserved.
-//
-
-// Based upon UIImageView+AFNetworking.h
-//
-// Copyright (c) 2011 Gowalla (http://gowalla.com/)
-// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,23 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#import "AFImageRequestOperation.h"
-
-#import <Availability.h>
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>
 
-@interface UIButton (AFNetworking)
+#ifndef _UIKIT_AFNETWORKING_
+    #define _UIKIT_AFNETWORKING_
 
-- (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholderImage forState:(UIControlState)state;
-- (void)setImageWithURL:(NSURL *)url
-       placeholderImage:(UIImage *)placeholderImage
-               forState:(UIControlState)state
-                success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image))success
-                failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error))failure;
+    #import "AFNetworkActivityIndicatorManager.h"
 
-@end
-
-#endif
+    #import "UIActivityIndicatorView+AFNetworking.h"
+    #import "UIAlertView+AFNetworking.h"
+    #import "UIButton+AFNetworking.h"
+    #import "UIImageView+AFNetworking.h"
+    #import "UIKit+AFNetworking.h"
+    #import "UIProgressView+AFNetworking.h"
+    #import "UIRefreshControl+AFNetworking.h"
+    #import "UIWebView+AFNetworking.h"
+#endif /* _UIKIT_AFNETWORKING_ */

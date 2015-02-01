@@ -8,6 +8,7 @@
 
 #import "BaseKitViewController.h"
 #import "ActivityHUD.h"
+#import "AFNetworking.h"
 
 #define BASEKIT_TXT_LOADING                 @"正在加载..."
 #define BASEKIT_TXT_TITLE                   @"提示"
@@ -32,26 +33,58 @@
     if (!self.params) {
         self.params = [NSMutableDictionary new];
     }
+    self.networkTasks = [NSMutableArray new];
     __weak BaseKitViewController *weakself = self;
-    self.statusBlock = ^(NetworkProviderStatus status, NSError *error) {
-        switch (status) {
-            case NetworkProviderStatusBegin:
-                [ActivityHUD loadingInView:[weakself getDisplayView] text:BASEKIT_TXT_LOADING];
-                break;
-            case NetworkProviderStatusEnd:
-                [ActivityHUD removeLoading];
-                break;
-            case NetworkProviderStatusFailed:
-                [ActivityHUD removeLoading];
-                break;
-            default:
-                break;
-        }
-    };
     self.failureBlock = ^(NSError *error) {
         [weakself showErrorTip:error];
     };
 }
+
+
+- (void)setNetworkStateOfTask:(NSURLSessionTask *)task{
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidResumeNotification object:nil];
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidSuspendNotification object:nil];
+    [notificationCenter removeObserver:self name:AFNetworkingTaskDidCompleteNotification object:nil];
+    
+    if (task) {
+        if (task.state == NSURLSessionTaskStateRunning) {
+            [notificationCenter addObserver:self selector:@selector(task_resume:) name:AFNetworkingTaskDidResumeNotification object:task];
+            [notificationCenter addObserver:self selector:@selector(task_end:) name:AFNetworkingTaskDidCompleteNotification object:task];
+            [notificationCenter addObserver:self selector:@selector(task_suspend:) name:AFNetworkingTaskDidSuspendNotification object:task];
+        } else {
+            NSNotification *notify = [[NSNotification alloc] initWithName:@"" object:task userInfo:nil];
+            [self task_end:notify];
+        }
+    }
+}
+- (void)task_resume:(NSNotification *)notify{
+    NSURLSessionTask *task = notify.object;
+    [self.networkTasks addObject:task];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ActivityHUD loadingInView:[self getDisplayView] text:BASEKIT_TXT_LOADING];
+    });
+}
+- (void)task_end:(NSNotification *)notify{
+    NSURLSessionTask *task = notify.object;
+    [self.networkTasks removeObject:task];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ActivityHUD removeLoading];
+    });
+}
+- (void)task_suspend:(NSNotification *)notify{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ActivityHUD removeLoading];
+    });
+}
+
+- (void)cancelAllTasks{
+    for (NSURLSessionDataTask *task in self.networkTasks) {
+        [task cancel];
+    }
+}
+
 
 //弹窗显示信息，过一段时间自动消失
 - (void)showInfoTip:(NSString *)tip{
@@ -111,6 +144,7 @@
 
 
 - (void)dealloc{
+    [self cancelAllTasks];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end

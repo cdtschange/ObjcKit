@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NetworkProvider.h"
 
 @interface BaseKitViewController : UIViewController
 
 //初始参数
-@property(strong,nonatomic)     NSMutableDictionary *params;
-@property (nonatomic, copy)     void (^statusBlock)(NetworkProviderStatus status, NSError *error);
+@property(strong,nonatomic)     NSMutableDictionary         *params;
+@property(nonatomic, strong)    NSMutableArray              *networkTasks;
 @property (nonatomic, copy)     void (^failureBlock)(NSError *);
 
 //初始化界面和初始数据（只执行一次的操作）
@@ -24,7 +23,8 @@
 - (void)initNotification;
 //加载数据（可能会反复调用）
 - (void)loadData;
-
+//网络请求Task变化的通知
+- (void)setNetworkStateOfTask:(NSURLSessionTask *)task;
 
 //弹窗显示信息，过一段时间自动消失
 - (void)showInfoTip:(NSString *)tip;

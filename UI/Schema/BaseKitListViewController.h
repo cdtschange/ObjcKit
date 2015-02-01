@@ -16,7 +16,6 @@ typedef enum{
 
 @interface BaseKitListViewController : BaseKitViewController<WaterRefreshDelegate,WaterLoadMoreDelegate>
 
-@property (nonatomic, copy)     void (^listStatusBlock)(NetworkProviderStatus status, NSError *error);
 @property (nonatomic, copy)     void (^listFailureBlock)(NSError *);
 @property(assign, nonatomic) WaterViewType listType; // 列表类型：刷新、加载更多
 @property(assign, nonatomic) int listLoadNumber;
@@ -29,5 +28,8 @@ typedef enum{
 - (UIScrollView *)listView;
 - (void)scrollViewPulling:(BOOL)isRefresh;
 - (void)dataArrayChanged:(NSArray *)array;
+
+//网络请求Task变化的通知
+- (void)setListNetworkStateOfTask:(NSURLSessionTask *)task;
 
 @end
