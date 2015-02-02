@@ -117,6 +117,7 @@ typedef enum {
         _dragingHeight = height;
         self.slimeMissWhenGoingBack = NO;
         self.waterRefreshView = self;
+        self.txtNoMore = STRING_NOMORE;
     }
     return self;
 }
@@ -537,7 +538,7 @@ typedef enum {
         } else {
             if (self.loadMoreRemindWord) {
                 if ([self.loadMoreRemindWord isEqualToString:@""]) {
-                    self.loadMoreRemindWord = STRING_NOMORE;
+                    self.loadMoreRemindWord = self.txtNoMore;
                 }
                 [self showLoadMoreRemind:self.loadMoreRemindWord];
             } else {
@@ -604,7 +605,7 @@ typedef enum {
 - (void)showNoContentRemind
 {
     self.loadMoreRemind.hidden = NO;
-    [self showLoadMoreRemind:STRING_NOMORE];
+    [self showLoadMoreRemind:self.txtNoMore];
 }
 
 - (void)showLoadMoreRemind:(NSString *)remindword
@@ -644,8 +645,8 @@ typedef enum {
             self.loadMoreRemind.text = remind;
             [self endLoadingMoreWithRemind:remind];
         } else {
-            self.loadMoreRemind.text = STRING_NOMORE;
-            [self endLoadingMoreWithRemind:STRING_NOMORE];
+            self.loadMoreRemind.text = self.txtNoMore;
+            [self endLoadingMoreWithRemind:self.txtNoMore];
         }
         [self performSelector:@selector(setInsetBottomAnimateToZeroAndCallDelegate:) withObject:[NSNumber numberWithBool:NO] afterDelay:DURIATION_SHOWNOMORE];
     } else {

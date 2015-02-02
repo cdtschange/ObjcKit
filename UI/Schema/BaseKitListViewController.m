@@ -34,6 +34,7 @@
     self.refreshLoadMoreView.loadMoreDelegate = self;
     self.refreshLoadMoreView.scrollView = self.listView;
     self.refreshLoadMoreView.loadMoreIndicatorWord = BASEKIT_TXT_LOADING;
+    self.refreshLoadMoreView.txtNoMore = self.txtNoMore;
 
     __weak BaseKitListViewController *weakself = self;
     self.listFailureBlock = ^(NSError *error) {
@@ -49,6 +50,10 @@
     _tipTextColor = tipTextColor;
     self.refreshLoadMoreView.loadMoreRemind.textColor = _tipTextColor;
     self.refreshLoadMoreView.refreshRemind.textColor = _tipTextColor;
+}
+-(void)setTxtNoMore:(NSString *)txtNoMore{
+    _txtNoMore = txtNoMore;
+    self.refreshLoadMoreView.txtNoMore = txtNoMore;
 }
 -(UIScrollView *)listView{
     return nil;//需要子类重写
@@ -75,11 +80,11 @@
     if ([self listLoadNumber]>0&&
         (self.dataArray.count%[self listLoadNumber]>0||
          self.dataArray.count>[self listMaxNumber])) {
-            [self.refreshLoadMoreView banFunctionOfStartLoadMore:YES remind:nil];
+            [self.refreshLoadMoreView banFunctionOfStartLoadMore:YES remind:self.txtNoMore];
         }else{
             if (!self.isRefresh) {
                 if ([self listLoadNumber]>0&&(self.dataArray.count>0 && array.count==0)) {
-                    [self.refreshLoadMoreView banFunctionOfStartLoadMore:YES remind:nil];
+                    [self.refreshLoadMoreView banFunctionOfStartLoadMore:YES remind:self.txtNoMore];
                 }
             }
         }

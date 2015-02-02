@@ -28,10 +28,10 @@
 -(void)beginCountDownWithSeconds:(int)seconds{
     self.stopTime = [[NSDate date] timeIntervalSince1970];
     self.stopTime += seconds;
-    self.enabled = NO;
     self.normalTitle = [self titleForState:UIControlStateNormal];
     [self showCurrentRemainSecond];
     [self stopTimer];
+    self.enabled = NO;
     self.countDownTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(countDownAction) userInfo:nil repeats:YES];
 
 }

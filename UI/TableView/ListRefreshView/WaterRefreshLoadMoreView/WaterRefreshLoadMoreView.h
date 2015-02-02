@@ -50,6 +50,7 @@ typedef enum{
 @property (nonatomic, weak) id <WaterLoadMoreDelegate>  loadMoreDelegate;
 @property (nonatomic, assign, readonly) BOOL isRefreshing;
 @property (nonatomic, assign, readonly) BOOL isLoadingMore;
+@property (nonatomic, copy) NSString *txtNoMore;
 
 // initial method
 - (id)initWithWithType:(WaterViewType)type;
