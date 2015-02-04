@@ -134,6 +134,8 @@
                                       parameters:(id)parameters
                                          success:(void (^)(NSURLSessionDataTask *, id))success
                                          failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+
+- (void)willRequestNetwork:(NSMutableURLRequest *)request;
 /**
  Creates and runs an `NSURLSessionDataTask` with a `GET` request.
 

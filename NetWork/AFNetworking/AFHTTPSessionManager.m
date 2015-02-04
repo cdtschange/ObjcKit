@@ -226,6 +226,7 @@
 {
     NSError *serializationError = nil;
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
+    [self willRequestNetwork:request];
     NSLog(@"%@",request);
     if (serializationError) {
         if (failure) {
@@ -254,6 +255,8 @@
     }];
 
     return dataTask;
+}
+- (void)willRequestNetwork:(NSMutableURLRequest *)request{
 }
 
 #pragma mark - NSObject
