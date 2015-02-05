@@ -10,6 +10,6 @@
 
 @interface NSString (Money)
 
-+(NSString *)stringFromMoney:(int)money;
++(NSString *)stringFromMoney:(long long)money;
 
 @end

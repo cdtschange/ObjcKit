@@ -216,7 +216,8 @@
     CGPoint textRectBoundary = CGPointMake(textFieldRect.origin.x, textFieldRect.origin.y + textFieldRect.size.height);
     
     if (!CGRectContainsPoint(aRect, textRectBoundary) || scrollView.contentOffset.y > 0) {
-        CGPoint scrollPoint = CGPointMake(0.0, self.superview.frame.origin.y + _textField.frame.origin.y + _textField.frame.size.height - aRect.size.height);
+        textFieldRect = [[_textField superview] convertRect:_textField.frame toView:self.scrollView];
+        CGPoint scrollPoint = CGPointMake(0.0, textFieldRect.origin.y + textFieldRect.size.height + _textField.frame.size.height - aRect.size.height);
         
         if (scrollPoint.y < 0) scrollPoint.y = 0;
         

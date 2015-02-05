@@ -10,7 +10,7 @@
 
 @implementation NSString (Money)
 
-+(NSString *)stringFromMoney:(int)money{
++(NSString *)stringFromMoney:(long long)money{
     if (money == 0)
     {
         return @"0";
@@ -19,14 +19,14 @@
     {
         NSMutableString *volumeStr = [NSMutableString string];
 
-        int common = money;
-        int tail = money % 1000;
+        long long common = money;
+        long long tail = money % 1000;
 
         while (common > 0)
         {
             if(tail == common)
             {
-                [volumeStr insertString:[NSString stringWithFormat:@"%d", tail] atIndex:0];
+                [volumeStr insertString:[NSString stringWithFormat:@"%lld", tail] atIndex:0];
                 break;
             }
             if (tail == 0) {
@@ -34,15 +34,15 @@
             }
             else if(tail < 10)
             {
-                [volumeStr insertString:[NSString stringWithFormat:@"00%d", tail] atIndex:0];
+                [volumeStr insertString:[NSString stringWithFormat:@"00%lld", tail] atIndex:0];
             }
             else if(tail < 100)
             {
-                [volumeStr insertString:[NSString stringWithFormat:@"0%d", tail] atIndex:0];
+                [volumeStr insertString:[NSString stringWithFormat:@"0%lld", tail] atIndex:0];
             }
             else
             {
-                [volumeStr insertString:[NSString stringWithFormat:@"%d", tail] atIndex:0];
+                [volumeStr insertString:[NSString stringWithFormat:@"%lld", tail] atIndex:0];
             }
 
             common = common / 1000;

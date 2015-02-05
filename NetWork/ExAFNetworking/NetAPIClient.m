@@ -19,9 +19,14 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[[self class] alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
-        _sharedClient.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
     });
     return _sharedClient;
+}
+-(instancetype)initWithBaseURL:(NSURL *)url{
+    if (self = [super initWithBaseURL:url]) {
+        self.securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+    }
+    return self;
 }
 -(void)setCachePolicy:(NSURLRequestCachePolicy)cachePolicy{
     self.requestSerializer.cachePolicy = cachePolicy;
@@ -47,17 +52,20 @@
                                          success:(void (^)(NSURLSessionDataTask *, id))success
                                          failure:(void (^)(NSURLSessionDataTask *, NSError *))failure{
     parameters = [self fillParamsWithBaseParam:parameters];
-    id cacheData = [self getCacheWithUrl:URLString params:parameters];
-    if (cacheData) {
-        if (success) {
-            success(nil, cacheData);
-            return nil;
+    if (self.cachePolicy==NSURLRequestReturnCacheDataElseLoad||self.cachePolicy==NSURLRequestReturnCacheDataDontLoad) {
+        id cacheData = [self getCacheWithUrl:URLString params:parameters];
+        if (cacheData) {
+            if (success) {
+                success(nil, cacheData);
+                return nil;
+            }
         }
     }
     int cachePolicy = self.cachePolicy;
     __weak NetAPIClient *weakself = self;
     return [super dataTaskWithHTTPMethod:method URLString:URLString parameters:parameters success:^(NSURLSessionDataTask *task, id responseObject){
-        if (cachePolicy) {
+        id cacheData = [weakself getCacheWithUrl:URLString params:parameters];
+        if (cachePolicy==NSURLRequestReturnCacheDataElseLoad||cachePolicy==NSURLRequestReturnCacheDataDontLoad||cacheData) {
             NSString *fullUrl = [weakself getFullPathWithUrl:URLString params:parameters];
             CacheProvider *cp = [CacheProvider shared];
             NSString *data = [responseObject JSONString];
@@ -78,7 +86,6 @@
     return fullUrl;
 }
 -(id)getCacheWithUrl:(NSString *)url params:(NSDictionary *)params{
-    if (self.cachePolicy==NSURLRequestReturnCacheDataElseLoad||self.cachePolicy==NSURLRequestReturnCacheDataDontLoad) {
         CacheProvider *cp = [CacheProvider shared];
         NSString *fullUrl = [self getFullPathWithUrl:url params:params];
         if ([cp hasKey:fullUrl]) {
@@ -87,7 +94,6 @@
             NSLog(@"Return Url Cached data");
             return obj;
         }
-    }
     return nil;
 }
 

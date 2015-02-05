@@ -13,6 +13,7 @@
 #import "NSData+Kit.h"
 #import "NSDate+Kit.h"
 #import "NSFileManager+Kit.h"
+#import "NSObject+Kit.h"
 #import "NSString+Kit.h"
 #import "UIColor+Kit.h"
 #import "UIDevice+Kit.h"
