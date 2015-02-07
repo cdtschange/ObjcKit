@@ -17,6 +17,7 @@
 
 #import "Category_Kit.h"
 #import "Data_Kit.h"
+#import "Media_Kit.h"
 #import "Network_Kit.h"
 #import "UI_Kit.h"
 
