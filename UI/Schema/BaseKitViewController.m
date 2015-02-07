@@ -63,6 +63,7 @@
     NSURLSessionTask *task = notify.object;
     [self.networkTasks addObject:task];
     dispatch_async(dispatch_get_main_queue(), ^{
+        [ActivityHUD removeLoading];
         [ActivityHUD loadingInView:[self getDisplayView] text:BASEKIT_TXT_LOADING];
     });
 }
