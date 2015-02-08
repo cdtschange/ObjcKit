@@ -665,7 +665,8 @@ typedef enum {
         self.loadMoreRemind.hidden = NO;
         self.loadMoreRemind.alpha = 1.0f;
         self.loadMoreRemind.text = word;
-        CGSize size = [word sizeWithFont:self.loadMoreRemind.font constrainedToSize:CGSizeMake(self.loadMoreView.bounds.size.width, MAXFLOAT) lineBreakMode:NSLineBreakByWordWrapping];
+        CGRect frame = [word boundingRectWithSize:CGSizeMake(self.loadMoreView.bounds.size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.loadMoreRemind.font} context:nil];
+        CGSize size = frame.size;
         CGRect rect = self.loadMoreRemind.frame;
         rect.size.width = size.width;
         rect.size.height = size.height;
@@ -841,7 +842,8 @@ typedef enum {
         // 如果有提供的文字就做左偏移
         //self.refreshRemindPicView.hidden = NO;
         self.refreshRemindPicView.alpha = 1.0f;
-        CGSize size = [word sizeWithFont:self.refreshRemind.font constrainedToSize:CGSizeMake(self.bounds.size.width, MAXFLOAT) lineBreakMode:NSLineBreakByWordWrapping];
+        CGRect frame = [word boundingRectWithSize:CGSizeMake(self.bounds.size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.refreshRemind.font} context:nil];
+        CGSize size = frame.size;
         CGRect rect = self.refreshRemind.frame;
         rect.size.width = size.width;
         rect.size.height = size.height;
