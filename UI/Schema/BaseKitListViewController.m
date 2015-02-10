@@ -28,6 +28,7 @@
 -(void)initUIAndData{
     [super initUIAndData];
     self.isRefresh = YES;
+    self.separatorTableViewInset = 15;
     self.dataArray = [NSMutableArray new];
     self.refreshLoadMoreView = [[WaterRefreshLoadMoreView alloc] initWithWithType:self.listType];
     self.refreshLoadMoreView.refreshDelegate = self;
@@ -166,7 +167,28 @@
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsMake(0,self.separatorTableViewInset,0,0)];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsMake(0,self.separatorTableViewInset,0,0)];
+    }
 //    [cell startCanvasAnimation];
+}
+
+-(void)viewDidLayoutSubviews
+{
+    UITableView *tableView = (UITableView *)self.listView;
+    if (tableView) {
+        if ([tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+            [tableView setSeparatorInset:UIEdgeInsetsMake(0,self.separatorTableViewInset,0,0)];
+        }
+        
+        if ([tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+            [tableView setLayoutMargins:UIEdgeInsetsMake(0,self.separatorTableViewInset,0,0)];
+        }
+    }
 }
 
 @end

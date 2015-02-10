@@ -25,6 +25,7 @@ typedef enum{
 @property(assign, nonatomic) int dataIndex;
 @property(strong, nonatomic) NSMutableArray *dataArray;
 @property(strong, nonatomic) WaterRefreshLoadMoreView *refreshLoadMoreView;
+@property(assign, nonatomic) int separatorTableViewInset;
 
 - (UIScrollView *)listView;
 - (void)scrollViewPulling:(BOOL)isRefresh;

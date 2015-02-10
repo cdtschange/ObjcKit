@@ -13,10 +13,10 @@
 /**
  设置微信AppId和url地址
  
- @param appId 微信应用Id
+ @param app_Id 微信应用Id
  @param url 微信消息url地址
  
  */
-+ (void)setWXAppId:(NSString *)appId appSecret:(NSString *)appSecret url:(NSString *)url;
++ (void)setWXAppId:(NSString *)app_Id appSecret:(NSString *)appSecret url:(NSString *)url;
 
 @end
