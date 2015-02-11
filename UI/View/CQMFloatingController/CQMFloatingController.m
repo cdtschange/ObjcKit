@@ -248,7 +248,13 @@
 //		[self.navigationController setViewControllers:viewControllers];
 //	}
     int count = (int)[[UIApplication sharedApplication] windows].count;
-	UIWindow *window = [[UIApplication sharedApplication] windows][count-1];
+    NSArray *winarr = [[UIApplication sharedApplication] windows];
+    UIWindow *window;
+    if (winarr.count>1) {
+        window = winarr[count-2];
+    }else if (winarr.count>0) {
+        window = winarr[count-1];
+    }
 	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 	[self.view setFrame:[window convertRect:appFrame fromView:nil]];
 	[window addSubview:[self view]];
