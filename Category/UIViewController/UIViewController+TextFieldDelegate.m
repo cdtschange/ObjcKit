@@ -79,5 +79,10 @@
     
     return NO;
 }
+-(BOOL)isTextEmptyWithTextField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    NSMutableString *newValue = [textField.text mutableCopy];
+    [newValue replaceCharactersInRange:range withString:string];
+    return newValue.length==0;
+}
 
 @end
