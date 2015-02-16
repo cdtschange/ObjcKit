@@ -68,7 +68,7 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
 }
 
 
-@interface THWebController()
+@interface THWebController()<NSURLConnectionDataDelegate>
 @property (nonatomic, readwrite, NI_STRONG) UIWebView* webView;
 @property (nonatomic, readwrite, NI_STRONG) UIToolbar* toolbar;
 @property (nonatomic, readwrite, NI_STRONG) UIActionSheet* actionSheet;
@@ -83,6 +83,11 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
 @property (nonatomic, readwrite, NI_STRONG) NSURL* loadingURL;
 
 @property (nonatomic, readwrite, NI_STRONG) NSURLRequest* loadRequest;
+
+@property (nonatomic, assign) BOOL authed;
+@property (nonatomic, strong) NSURLConnection *urlConnection;
+@property (nonatomic, strong) NSURLRequest *originRequest;
+
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,9 +423,23 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType {
+    NSString* scheme = [[request URL] scheme];
+    NSLog(@"scheme = %@",scheme);
+    //判断https
+    if ([scheme isEqualToString:@"https"]) {
+        //如果是https:的话，那么就用NSURLConnection来重发请求。从而在请求的过程当中吧要请求的URL做信任处理。
+        if (!self.authed) {
+            self.originRequest = request;
+            NSURLConnection* conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+            [conn start];
+            [self.webView stopLoading];
+            return NO;
+        }
+    }
     self.loadingURL = [request.mainDocumentURL copy];
     self.backButton.enabled = [self.webView canGoBack];
     self.forwardButton.enabled = [self.webView canGoForward];
+    
     return YES;
 }
 
@@ -519,6 +538,13 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)openURL:(NSURL*)URL {
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:URL];
+//    NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+//    
+//    //堵塞线程，等待结束
+//    BOOL finished = false;
+//    while(!finished) {
+//        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+//    }
     [self openRequest:request];
 }
 
@@ -526,7 +552,6 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)openRequest:(NSURLRequest *)request {
     self.loadRequest = request;
-    
     if ([self isViewLoaded]) {
         if (nil != request) {
             [self.webView loadRequest:request];
@@ -576,5 +601,31 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
     return YES;
 }
 
-
+#pragma mark - NURLConnection delegate
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    
+    if ([challenge previousFailureCount]== 0) {
+        self.authed = YES;
+        
+        //NSURLCredential 这个类是表示身份验证凭据不可变对象。凭证的实际类型声明的类的构造函数来确定。
+        NSURLCredential* cre = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+        [challenge.sender useCredential:cre forAuthenticationChallenge:challenge];
+    }
+}
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
+{
+    
+    NSLog(@"%@",request);
+    return request;
+    
+}
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    
+    self.authed = YES;
+    //webview 重新加载请求。
+    [self.webView loadRequest:self.originRequest];
+    [connection cancel];
+}
 @end
