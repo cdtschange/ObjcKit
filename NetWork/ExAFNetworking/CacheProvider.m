@@ -77,7 +77,7 @@ CacheProvider * _sharedCacheProvider = nil;
 }
 -(BOOL)isExpiredByKey:(NSString *)key{
     if (![self hasKey:key]) {
-        return NO;
+        return YES;
     }
     NSString *name = [self md5Encrypt:key];
     NSString *filePath = [self.path stringByAppendingPathComponent:name];
@@ -85,9 +85,9 @@ CacheProvider * _sharedCacheProvider = nil;
     int currentTime = [[NSDate date] timeIntervalSince1970];
     int expireTime = [[data objectForKey:DEFAULT_CACHEPROVIDER_FIELD_EXPIRETIME] intValue];
     if (currentTime > expireTime){
-        return NO;
-    }else{
         return YES;
+    }else{
+        return NO;
     }
 }
 -(NSString *)cacheByKey:(NSString *)key{
