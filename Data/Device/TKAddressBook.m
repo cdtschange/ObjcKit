@@ -33,6 +33,9 @@
     ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error){dispatch_semaphore_signal(sema);});
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     CFArrayRef results = ABAddressBookCopyArrayOfAllPeople(addressBook);
+    if (!results) {
+        return @[];
+    }
     NSMutableArray *contacts = [[NSMutableArray alloc] initWithCapacity:CFArrayGetCount(results)];
     for(int i = 0; i < CFArrayGetCount(results); i++)
     {
