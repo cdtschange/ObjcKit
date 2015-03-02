@@ -17,4 +17,8 @@
 //判断是否为浮点形：
 
 - (BOOL)isPureFloat;
+
+//是否是数字、字母组合
+- (BOOL)isIncludeNumAndStr;
+
 @end
