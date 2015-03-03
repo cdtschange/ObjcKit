@@ -72,7 +72,7 @@ AppInfo * _sharedAppInfo = nil;
 - (NSString *)IMEI
 {
     if (self.imeiPrivate.length == 0) {
-        self.imeiPrivate = [OpenUDID value];
+        self.imeiPrivate = [NSOpenUDID value];
     }
     return self.imeiPrivate;
 }

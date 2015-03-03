@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OpenUDID.h"
+#import "NSOpenUDID.h"
 
 @interface AppInfo : NSObject
 

@@ -343,7 +343,7 @@ static NSString* NIPathForBundleResource(NSBundle* bundle, NSString* relativePat
     self.webView.scalesPageToFit = YES;
     
     if ([UIColor respondsToSelector:@selector(underPageBackgroundColor)]) {
-        self.webView.backgroundColor = [UIColor underPageBackgroundColor];
+        self.webView.backgroundColor = [UIColor whiteColor];
     }
     
     [self.view addSubview:self.webView];
