@@ -121,4 +121,30 @@
     }
     return nil;
 }
+//eg:  bodyBlock:  [formData appendPartWithFileData:data name:@"data" fileName:@"filename.png" mimeType:@"image/png" ];
+-(NSURLSessionUploadTask *)uploadWithProgress:(NSProgress *)progress bodyBlock:(void (^)(id<AFMultipartFormData>))bodyBlock success:(void (^)(id))success failure:(void (^)(NSError *))failure{
+    Class class = [self class];
+    NSString *rurl = [[NSURL URLWithString:self.apiUrl relativeToURL:self.apiClient.baseURL] absoluteString];
+    NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:self.apiMethod URLString:rurl parameters:self.apiQuery constructingBodyWithBlock:bodyBlock error:nil];
+    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request progress:&progress completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        if (error) {
+            if (failure) {
+                failure(error);
+            }
+        } else {
+            id result = responseObject;
+            if (responseObject) {
+                result = [class jsonToObj:responseObject];
+            }
+            if (success) {
+                success(result);
+            }
+        }
+    }];
+    
+    [uploadTask resume];
+    return uploadTask;
+}
+
 @end

@@ -20,5 +20,7 @@
 @property (nonatomic, assign) NSURLRequestCachePolicy cachePolicy;
 + (instancetype)initWithClient:(NetAPIClient *)client query:(NSDictionary *)query mehod:(NSString *)method url:(NSString *)url;
 - (NSURLSessionDataTask *)requestWithSuccess:(void (^)(id responseObject))success failure:(void (^)(NSError *error))failure;
+- (NSURLSessionUploadTask *)uploadWithProgress:(NSProgress *)progress bodyBlock:(void (^)(id <AFMultipartFormData> formData))bodyBlock success:(void (^)(id responseObject))success failure:(void (^)(NSError *error))failure;
+
 
 @end
